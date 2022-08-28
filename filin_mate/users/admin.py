@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User
+from .models import Doctor, Patient, User
 
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -14,4 +14,19 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
 
 
+class DoctorAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+    )
+
+
+class PatientAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'age',
+    )
+
+
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Doctor, DoctorAdmin)
+admin.site.register(Patient, PatientAdmin)
