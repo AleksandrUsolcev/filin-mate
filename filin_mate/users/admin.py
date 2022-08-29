@@ -10,7 +10,8 @@ class CustomUserAdmin(admin.ModelAdmin):
         'first_name',
         'middle_name',
         'last_name',
-        'created'
+        'created',
+        'role'
     )
 
 

@@ -6,17 +6,16 @@ from .managers import CustomUserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """Пользователь"""
 
     ADMIN = 'admin'
     EDITOR = 'editor'
-    DOCTOR = 'doctor'
-    PATIENT = 'patient'
+    USER = 'user'
 
     ROLES = (
         (ADMIN, 'Администратор'),
         (EDITOR, 'Редактор'),
-        (DOCTOR, 'Врач'),
-        (PATIENT, 'Пациент'),
+        (USER, 'Пользователь'),
     )
 
     email = models.EmailField(
@@ -28,7 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Роль',
         choices=ROLES,
         max_length=10,
-        default='patient'
+        default='user'
     )
     first_name = models.CharField(
         verbose_name='Имя',
@@ -69,24 +68,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     @property
-    def role_admin(self):
+    def is_admin(self):
         return self.role == self.ADMIN
 
     @property
-    def role_editor(self):
+    def is_editor(self):
         return self.role == self.EDITOR
 
     @property
-    def role_doctor(self):
-        return self.role == self.DOCTOR
-
-    @property
-    def role_patient(self):
-        return self.role == self.PATIENT
+    def is_user(self):
+        return self.role == self.USER
 
     class Meta:
         verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
+        verbose_name_plural = 'Все пользователи'
 
     def __str__(self):
         return self.email
@@ -99,6 +94,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Doctor(models.Model):
+    """Врач"""
+
     user = models.OneToOneField(
         User,
         verbose_name='Пользователь',
@@ -111,10 +108,12 @@ class Doctor(models.Model):
         verbose_name_plural = 'Врачи'
 
     def __str__(self):
-        return self.user
+        return self.user.email
 
 
 class Patient(models.Model):
+    """Пациент"""
+
     user = models.OneToOneField(
         User,
         verbose_name='Пользователь',
@@ -129,25 +128,10 @@ class Patient(models.Model):
     age = models.DateField(
         verbose_name='Дата рождения'
     )
-    height = models.FloatField(
-        verbose_name='Рост',
-        blank=True,
-        null=True
-    )
-    weight = models.FloatField(
-        verbose_name='Вес',
-        blank=True,
-        null=True
-    )
-    location = models.TextField(
-        verbose_name='Текущая локация',
-        blank=True,
-        max_length=300
-    )
 
     class Meta:
         verbose_name = 'Пациент'
         verbose_name_plural = 'Пациенты'
 
     def __str__(self):
-        return self.user
+        return self.user.email
