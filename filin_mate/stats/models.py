@@ -1,9 +1,15 @@
-from django.db import models
 from core.models import StatsBaseModel
+from django.db import models
+from users.models import Patient
 
 
 class Pressure(StatsBaseModel):
     """Давление"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='pressures',
+        on_delete=models.CASCADE
+    )
     lower = models.PositiveIntegerField(
         verbose_name='Нижнее',
     )
@@ -17,6 +23,11 @@ class Pressure(StatsBaseModel):
 
 class Pulse(StatsBaseModel):
     """Пульс"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='pulses',
+        on_delete=models.CASCADE
+    )
     data = models.PositiveIntegerField(
         verbose_name='Показатель пульса',
     )
@@ -27,6 +38,11 @@ class Pulse(StatsBaseModel):
 
 class Saturation(StatsBaseModel):
     """Сатурация"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='saturations',
+        on_delete=models.CASCADE
+    )
     data = models.PositiveIntegerField(
         verbose_name='Показатель сатурации',
     )
@@ -37,6 +53,11 @@ class Saturation(StatsBaseModel):
 
 class BloodSugar(StatsBaseModel):
     """Сахар в крови"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='sugars',
+        on_delete=models.CASCADE
+    )
     data = models.FloatField(
         verbose_name='Ммоль',
     )
@@ -47,6 +68,11 @@ class BloodSugar(StatsBaseModel):
 
 class BodyHeat(StatsBaseModel):
     """Температура тела"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='heats',
+        on_delete=models.CASCADE
+    )
     data = models.FloatField(
         verbose_name='Температура по Цельсию',
     )
@@ -57,6 +83,11 @@ class BodyHeat(StatsBaseModel):
 
 class Weight(StatsBaseModel):
     """Вес"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='weights',
+        on_delete=models.CASCADE
+    )
     data = models.FloatField(
         verbose_name='Вес (кг)',
     )
@@ -67,6 +98,11 @@ class Weight(StatsBaseModel):
 
 class Height(StatsBaseModel):
     """Рост"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='heights',
+        on_delete=models.CASCADE
+    )
     data = models.PositiveIntegerField(
         verbose_name='Рост (см)'
     )
@@ -77,6 +113,11 @@ class Height(StatsBaseModel):
 
 class SleepTime(StatsBaseModel):
     """Время сна"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='sleeps',
+        on_delete=models.CASCADE
+    )
     data = models.FloatField(
         verbose_name='Время сна (час)'
     )
@@ -87,6 +128,11 @@ class SleepTime(StatsBaseModel):
 
 class Location(StatsBaseModel):
     """Местоположение"""
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='locations',
+        on_delete=models.CASCADE
+    )
     latitude = models.FloatField(
         verbose_name='Широта'
     )
