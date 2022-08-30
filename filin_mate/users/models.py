@@ -93,6 +93,33 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
 
+class Patient(models.Model):
+    """Пациент"""
+
+    telegram = models.PositiveIntegerField(
+        verbose_name='telegram id',
+        unique=True,
+        blank=True,
+        null=True,
+    )
+    user = models.OneToOneField(
+        User,
+        verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    age = models.DateField(
+        verbose_name='Дата рождения',
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = 'Пациент'
+        verbose_name_plural = 'Пациенты'
+
+
 class Doctor(models.Model):
     """Врач"""
 
@@ -101,37 +128,17 @@ class Doctor(models.Model):
         verbose_name='Пользователь',
         on_delete=models.CASCADE,
     )
+    patients = models.ManyToManyField(
+        Patient,
+        blank=True,
+        verbose_name='Пациенты',
+        related_name='doctors'
+    )
     # and experience, education, position fields
 
     class Meta:
         verbose_name = 'Врач'
         verbose_name_plural = 'Врачи'
-
-    def __str__(self):
-        return self.user.email
-
-
-class Patient(models.Model):
-    """Пациент"""
-
-    user = models.OneToOneField(
-        User,
-        verbose_name='Пользователь',
-        on_delete=models.CASCADE,
-    )
-    doctors = models.ManyToManyField(
-        Doctor,
-        blank=True,
-        verbose_name='Лечащие врачи',
-        related_name='patients'
-    )
-    age = models.DateField(
-        verbose_name='Дата рождения'
-    )
-
-    class Meta:
-        verbose_name = 'Пациент'
-        verbose_name_plural = 'Пациенты'
 
     def __str__(self):
         return self.user.email
