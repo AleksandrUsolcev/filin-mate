@@ -4,18 +4,19 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from users.models import User, Patient
+from stats import models as stats
+from users.models import Patient, User
 
-from .serializers import TokenSerializer, PatientSerializer
+from . import serializers as srl
 
 
 class TokenViewSet(ModelViewSet):
-    serializer_class = TokenSerializer
+    serializer_class = srl.TokenSerializer
     permission_classes = (AllowAny,)
     http_method_names = ('post',)
 
     def create(self, request, *args, **kwargs):
-        serializer = TokenSerializer(data=request.data)
+        serializer = srl.TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email'].lower()
         password = serializer.validated_data['password']
@@ -39,6 +40,63 @@ class TokenViewSet(ModelViewSet):
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
 
-class PatientSerializer(ModelViewSet):
-    serializer_class = PatientSerializer
+class PatientViewSet(ModelViewSet):
+    serializer_class = srl.PatientSerializer
     queryset = Patient.objects.all()
+    lookup_field = "telegram"
+
+
+class PulseViewSet(ModelViewSet):
+    serializer_class = srl.PulseSerializer
+    model = stats.Pulse
+
+    def get_queryset(self):
+        telegram = self.kwargs['telegram_id']
+        patient = get_object_or_404(Patient, telegram=telegram)
+        queryset = self.model.objects.all().filter(patient=patient)
+        return queryset
+
+    def perform_create(self, serializer):
+        telegram = self.kwargs['telegram_id']
+        patient = get_object_or_404(Patient, telegram=telegram)
+        serializer.save(patient=patient)
+
+
+class PressureViewSet(PulseViewSet):
+    serializer_class = srl.PressureSerializer
+    model = stats.Pressure
+
+
+class SaturationViewSet(PulseViewSet):
+    serializer_class = srl.SaturationSerializer
+    model = stats.Saturation
+
+
+class BloodSugarViewSet(PulseViewSet):
+    serializer_class = srl.BloodSugarSerializer
+    model = stats.BloodSugar
+
+
+class BodyHeatViewSet(PulseViewSet):
+    serializer_class = srl.BodyHeatSerializer
+    model = stats.BodyHeat
+
+
+class WeightViewSet(PulseViewSet):
+    serializer_class = srl.WeightSerializer
+    model = stats.Weight
+
+
+class HeightViewSet(PulseViewSet):
+    serializer_class = srl.HeightSerializer
+    model = stats.Height
+
+
+class SleepTimeViewSet(PulseViewSet):
+    serializer_class = srl.SleepTimeSerializer
+    model = stats.SleepTime
+
+
+class LocationViewSet(PulseViewSet):
+    serializer_class = srl.LocationSerializer
+    model = stats.Location
