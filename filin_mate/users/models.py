@@ -98,6 +98,7 @@ class Patient(models.Model):
 
     telegram = models.PositiveIntegerField(
         verbose_name='telegram id',
+        unique=True,
         blank=True,
         null=True,
     )

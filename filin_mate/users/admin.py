@@ -24,6 +24,7 @@ class DoctorAdmin(admin.ModelAdmin):
 class PatientAdmin(admin.ModelAdmin):
     list_display = (
         'user',
+        'telegram',
         'age',
     )
 
