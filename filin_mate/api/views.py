@@ -43,7 +43,7 @@ class TokenViewSet(ModelViewSet):
 class PatientViewSet(ModelViewSet):
     serializer_class = srl.PatientSerializer
     queryset = Patient.objects.all()
-    lookup_field = "telegram"
+    lookup_field = 'telegram'
 
 
 class PulseViewSet(ModelViewSet):
@@ -54,12 +54,12 @@ class PulseViewSet(ModelViewSet):
         telegram = self.kwargs['telegram_id']
         patient = get_object_or_404(Patient, telegram=telegram)
         queryset = self.model.objects.all().filter(patient=patient)
-        return queryset
+        return queryset.order_by('-created',)
 
     def perform_create(self, serializer):
         telegram = self.kwargs['telegram_id']
-        patient = get_object_or_404(Patient, telegram=telegram)
-        serializer.save(patient=patient)
+        patient = Patient.objects.get_or_create(telegram=telegram)
+        serializer.save(patient=patient[0])
 
 
 class PressureViewSet(PulseViewSet):
