@@ -1,4 +1,5 @@
 from core.models import StatsBaseModel
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from users.models import Patient
 
@@ -12,9 +13,17 @@ class Pressure(StatsBaseModel):
     )
     lower = models.PositiveIntegerField(
         verbose_name='Нижнее',
+        validators=[
+            MinValueValidator(30),
+            MaxValueValidator(250)
+        ]
     )
     upper = models.PositiveIntegerField(
         verbose_name='Верхнее',
+        validators=[
+            MinValueValidator(30),
+            MaxValueValidator(250)
+        ]
     )
 
     def __str__(self):
@@ -30,6 +39,10 @@ class Pulse(StatsBaseModel):
     )
     data = models.PositiveIntegerField(
         verbose_name='Показатель пульса',
+        validators=[
+            MinValueValidator(20),
+            MaxValueValidator(300)
+        ]
     )
 
     def __str__(self):
@@ -45,6 +58,10 @@ class Saturation(StatsBaseModel):
     )
     data = models.PositiveIntegerField(
         verbose_name='Показатель сатурации',
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ]
     )
 
     def __str__(self):
@@ -60,6 +77,10 @@ class BloodSugar(StatsBaseModel):
     )
     data = models.FloatField(
         verbose_name='Ммоль',
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(70)
+        ]
     )
 
     def __str__(self):
@@ -75,6 +96,10 @@ class BodyHeat(StatsBaseModel):
     )
     data = models.FloatField(
         verbose_name='Температура по Цельсию',
+        validators=[
+            MinValueValidator(33),
+            MaxValueValidator(43)
+        ]
     )
 
     def __str__(self):
@@ -90,6 +115,10 @@ class Weight(StatsBaseModel):
     )
     data = models.FloatField(
         verbose_name='Вес (кг)',
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(600)
+        ]
     )
 
     def __str__(self):
@@ -104,7 +133,11 @@ class Height(StatsBaseModel):
         on_delete=models.CASCADE
     )
     data = models.PositiveIntegerField(
-        verbose_name='Рост (см)'
+        verbose_name='Рост (см)',
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(260)
+        ]
     )
 
     def __str__(self):
@@ -119,7 +152,11 @@ class SleepTime(StatsBaseModel):
         on_delete=models.CASCADE
     )
     data = models.FloatField(
-        verbose_name='Время сна (час)'
+        verbose_name='Время сна (час)',
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(24)
+        ]
     )
 
     def __str__(self):
