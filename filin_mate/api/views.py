@@ -4,42 +4,19 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from stats import models as stats
 from users.models import Patient, User
 
 from . import exceptions as exc
-from . import serializers as srl
-
-STATS_TYPES = {
-    'pulse': stats.Pulse,
-    'pressure': stats.Pressure,
-    'sugar': stats.BloodSugar,
-    'heat': stats.BodyHeat,
-    'weight': stats.Weight,
-    'height': stats.Height,
-    'sleep': stats.SleepTime,
-    'location': stats.Location,
-}
-
-SRL_TYPES = {
-    'pulse': srl.PulseSerializer,
-    'pressure': srl.PressureSerializer,
-    'sugar': srl.BloodSugarSerializer,
-    'heat': srl.BodyHeatSerializer,
-    'weight': srl.WeightSerializer,
-    'height': srl.HeightSerializer,
-    'sleep': srl.SleepTimeSerializer,
-    'location': srl.LocationSerializer,
-}
+from .serializers import PatientSerializer, TokenSerializer
 
 
 class TokenViewSet(ModelViewSet):
-    serializer_class = srl.TokenSerializer
+    serializer_class = TokenSerializer
     permission_classes = (AllowAny,)
     http_method_names = ('post',)
 
     def create(self, request, *args, **kwargs):
-        serializer = srl.TokenSerializer(data=request.data)
+        serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email'].lower()
         password = serializer.validated_data['password']
@@ -55,7 +32,7 @@ class TokenViewSet(ModelViewSet):
 
 
 class PatientViewSet(ModelViewSet):
-    serializer_class = srl.PatientSerializer
+    serializer_class = PatientSerializer
     queryset = Patient.objects.all()
     lookup_field = 'telegram'
 
@@ -66,16 +43,18 @@ class StatsViewSet(ModelViewSet):
         telegram = self.request.query_params.get('user')
         if not stat_type:
             raise exc.MissingTypeParamException
+        elif stat_type not in exc.STATS_TYPES:
+            raise exc.WrongTypeParamException
         if not telegram:
             raise exc.MissingUserParamException
-        self.model = STATS_TYPES[stat_type]
-        patient = get_object_or_404(Patient, telegram=telegram)
-        queryset = self.model.objects.all().filter(patient=patient)
+        self.model = exc.STATS_TYPES[stat_type][0]
+        patient = Patient.objects.get_or_create(telegram=telegram)
+        queryset = self.model.objects.all().filter(patient=patient[0])
         return queryset.order_by('-created',)
 
     def get_serializer_class(self):
         stat_type = self.request.query_params.get('type')
-        self.serializer_class = SRL_TYPES[stat_type]
+        self.serializer_class = exc.STATS_TYPES[stat_type][1]
         return self.serializer_class
 
     def perform_create(self, serializer):
