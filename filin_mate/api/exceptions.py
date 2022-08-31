@@ -1,19 +1,4 @@
 from rest_framework.exceptions import APIException
-from stats import models as stats
-
-from . import serializers as srl
-
-STATS_TYPES = {
-    'pulse': [stats.Pulse, srl.PulseSerializer],
-    'saturation': [stats.Saturation, srl.SaturationSerializer],
-    'pressure': [stats.Pressure, srl.PressureSerializer],
-    'sugar': [stats.BloodSugar, srl.BloodSugarSerializer],
-    'heat': [stats.BodyHeat, srl.BodyHeatSerializer],
-    'weight': [stats.Weight, srl.WeightSerializer],
-    'height': [stats.Height, srl.HeightSerializer],
-    'sleep': [stats.SleepTime, srl.SleepTimeSerializer],
-    'location': [stats.Location, srl.LocationSerializer],
-}
 
 
 class UserNotFoundException(APIException):
@@ -41,7 +26,7 @@ class MissingTypeParamException(APIException):
     default_detail = 'Не указан обязательный параметр type'
 
 
-class WrongTypeParamException(APIException):
-    status_code = 400
-    default_detail = ('Неверное значение параметра type. Выберите один из '
-                      'параметров: ' + ', '.join(list(STATS_TYPES.keys())))
+# class WrongTypeParamException(APIException):
+#     status_code = 400
+#     default_detail = ('Неверное значение параметра type. Выберите один из '
+#                       'параметров: ' + ', '.join(list(STATS_TYPES.keys())))

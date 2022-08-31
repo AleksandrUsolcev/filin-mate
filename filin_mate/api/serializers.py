@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from stats import models as stats
+from stats.models import Pressure, Stats
 from users.models import Patient, User
 
 
@@ -20,55 +20,17 @@ class PatientSerializer(serializers.ModelSerializer):
         fields = ('telegram', 'user', 'age')
 
 
+class StatsSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(required=False)
+
+    class Meta:
+        model = Stats
+        fields = ('data', 'type', 'created')
+
+
 class PressureSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(required=False, default='pressure')
+
     class Meta:
-        model = stats.Pressure
-        fields = ('lower', 'upper', 'created')
-
-
-class PulseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Pulse
-        fields = ('data', 'created')
-
-
-class SaturationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Saturation
-        fields = ('data', 'created')
-
-
-class BloodSugarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.BloodSugar
-        fields = ('data', 'created')
-
-
-class BodyHeatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.BodyHeat
-        fields = ('data', 'created')
-
-
-class WeightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Weight
-        fields = ('data', 'created')
-
-
-class HeightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Height
-        fields = ('data', 'created')
-
-
-class SleepTimeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.SleepTime
-        fields = ('data', 'created')
-
-
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Location
-        fields = ('latitude', 'longitude')
+        model = Pressure
+        fields = ('upper', 'lower', 'type', 'created')

@@ -4,6 +4,34 @@ from django.db import models
 from users.models import Patient
 
 
+class Stats(StatsBaseModel):
+    """Показатели здоровья"""
+    TYPES = (
+        ('pulse', 'Пульс'),
+        ('saturation', 'Сатурация'),
+        ('sugar', 'Сахар в крови (ммоль)'),
+        ('heat', 'Температура тела'),
+        ('weight', 'Вес (кг)'),
+        ('height', 'Рост (см)'),
+        ('sleep', 'Время сна'),
+    )
+
+    patient = models.ForeignKey(
+        Patient,
+        verbose_name='stats',
+        on_delete=models.CASCADE
+    )
+    type = models.CharField(
+        verbose_name='Показатель',
+        choices=TYPES,
+        max_length=20,
+    )
+    data = models.FloatField()
+
+    def __str__(self):
+        return f'{self.data}'
+
+
 class Pressure(StatsBaseModel):
     """Давление"""
     patient = models.ForeignKey(
@@ -28,139 +56,6 @@ class Pressure(StatsBaseModel):
 
     def __str__(self):
         return f'{self.upper} на {self.lower}'
-
-
-class Pulse(StatsBaseModel):
-    """Пульс"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='pulses',
-        on_delete=models.CASCADE
-    )
-    data = models.PositiveIntegerField(
-        verbose_name='Показатель пульса',
-        validators=[
-            MinValueValidator(20),
-            MaxValueValidator(300)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.data} уд/м'
-
-
-class Saturation(StatsBaseModel):
-    """Сатурация"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='saturations',
-        on_delete=models.CASCADE
-    )
-    data = models.PositiveIntegerField(
-        verbose_name='Показатель сатурации',
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(100)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.data}'
-
-
-class BloodSugar(StatsBaseModel):
-    """Сахар в крови"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='sugars',
-        on_delete=models.CASCADE
-    )
-    data = models.FloatField(
-        verbose_name='Ммоль',
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(70)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.data} ммоль'
-
-
-class BodyHeat(StatsBaseModel):
-    """Температура тела"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='heats',
-        on_delete=models.CASCADE
-    )
-    data = models.FloatField(
-        verbose_name='Температура по Цельсию',
-        validators=[
-            MinValueValidator(33),
-            MaxValueValidator(43)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.data} C'
-
-
-class Weight(StatsBaseModel):
-    """Вес"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='weights',
-        on_delete=models.CASCADE
-    )
-    data = models.FloatField(
-        verbose_name='Вес (кг)',
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(600)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.data} кг'
-
-
-class Height(StatsBaseModel):
-    """Рост"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='heights',
-        on_delete=models.CASCADE
-    )
-    data = models.PositiveIntegerField(
-        verbose_name='Рост (см)',
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(260)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.data} см'
-
-
-class SleepTime(StatsBaseModel):
-    """Время сна"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='sleeps',
-        on_delete=models.CASCADE
-    )
-    data = models.FloatField(
-        verbose_name='Время сна (час)',
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(24)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.data} ч.'
 
 
 class Location(StatsBaseModel):
