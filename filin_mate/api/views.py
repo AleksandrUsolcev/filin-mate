@@ -7,7 +7,30 @@ from rest_framework_simplejwt.tokens import AccessToken
 from stats import models as stats
 from users.models import Patient, User
 
+from . import exceptions as exc
 from . import serializers as srl
+
+STATS_TYPES = {
+    'pulse': stats.Pulse,
+    'pressure': stats.Pressure,
+    'sugar': stats.BloodSugar,
+    'heat': stats.BodyHeat,
+    'weight': stats.Weight,
+    'height': stats.Height,
+    'sleep': stats.SleepTime,
+    'location': stats.Location,
+}
+
+SRL_TYPES = {
+    'pulse': srl.PulseSerializer,
+    'pressure': srl.PressureSerializer,
+    'sugar': srl.BloodSugarSerializer,
+    'heat': srl.BodyHeatSerializer,
+    'weight': srl.WeightSerializer,
+    'height': srl.HeightSerializer,
+    'sleep': srl.SleepTimeSerializer,
+    'location': srl.LocationSerializer,
+}
 
 
 class TokenViewSet(ModelViewSet):
@@ -21,21 +44,12 @@ class TokenViewSet(ModelViewSet):
         email = serializer.validated_data['email'].lower()
         password = serializer.validated_data['password']
         if not User.objects.filter(email=email).exists():
-            return Response(
-                {'not_found': 'Такого пользователя несуществует'},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            raise exc.UserNotFoundException
         user = get_object_or_404(User, email=email)
         if user.check_password(password) is False:
-            return Response(
-                {'bad_request': 'Неверный пароль'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            raise exc.InvalidPasswordException
         if not user.is_superuser:
-            return Response(
-                {'forbidden': 'Нет прав для получения токена'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+            raise exc.TokenPermissionException
         token = AccessToken.for_user(user)
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
@@ -46,57 +60,25 @@ class PatientViewSet(ModelViewSet):
     lookup_field = 'telegram'
 
 
-class PulseViewSet(ModelViewSet):
-    serializer_class = srl.PulseSerializer
-    model = stats.Pulse
-
+class StatsViewSet(ModelViewSet):
     def get_queryset(self):
-        telegram = self.kwargs['telegram_id']
+        stat_type = self.request.query_params.get('type')
+        telegram = self.request.query_params.get('user')
+        if not stat_type:
+            raise exc.MissingTypeParamException
+        if not telegram:
+            raise exc.MissingUserParamException
+        self.model = STATS_TYPES[stat_type]
         patient = get_object_or_404(Patient, telegram=telegram)
         queryset = self.model.objects.all().filter(patient=patient)
         return queryset.order_by('-created',)
 
+    def get_serializer_class(self):
+        stat_type = self.request.query_params.get('type')
+        self.serializer_class = SRL_TYPES[stat_type]
+        return self.serializer_class
+
     def perform_create(self, serializer):
-        telegram = self.kwargs['telegram_id']
+        telegram = self.request.query_params.get('user')
         patient = Patient.objects.get_or_create(telegram=telegram)
         serializer.save(patient=patient[0])
-
-
-class PressureViewSet(PulseViewSet):
-    serializer_class = srl.PressureSerializer
-    model = stats.Pressure
-
-
-class SaturationViewSet(PulseViewSet):
-    serializer_class = srl.SaturationSerializer
-    model = stats.Saturation
-
-
-class BloodSugarViewSet(PulseViewSet):
-    serializer_class = srl.BloodSugarSerializer
-    model = stats.BloodSugar
-
-
-class BodyHeatViewSet(PulseViewSet):
-    serializer_class = srl.BodyHeatSerializer
-    model = stats.BodyHeat
-
-
-class WeightViewSet(PulseViewSet):
-    serializer_class = srl.WeightSerializer
-    model = stats.Weight
-
-
-class HeightViewSet(PulseViewSet):
-    serializer_class = srl.HeightSerializer
-    model = stats.Height
-
-
-class SleepTimeViewSet(PulseViewSet):
-    serializer_class = srl.SleepTimeSerializer
-    model = stats.SleepTime
-
-
-class LocationViewSet(PulseViewSet):
-    serializer_class = srl.LocationSerializer
-    model = stats.Location
