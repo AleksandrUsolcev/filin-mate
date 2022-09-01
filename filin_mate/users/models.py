@@ -114,6 +114,10 @@ class Patient(models.Model):
         blank=True,
         null=True
     )
+    created = models.DateTimeField(
+        verbose_name='Дата регистрации',
+        default=timezone.now
+    )
 
     class Meta:
         verbose_name = 'Пациент'

@@ -16,17 +16,11 @@ class TokenPermissionException(APIException):
     default_detail = 'У данного пользователя нет прав для получения токена'
 
 
-class MissingUserParamException(APIException):
+class MissingPatientParamException(APIException):
     status_code = 400
-    default_detail = 'Не указан обязательный параметр user'
+    default_detail = 'Не указан обязательный параметр patient__telegram'
 
 
 class MissingTypeParamException(APIException):
     status_code = 400
     default_detail = 'Не указан обязательный параметр type'
-
-
-# class WrongTypeParamException(APIException):
-#     status_code = 400
-#     default_detail = ('Неверное значение параметра type. Выберите один из '
-#                       'параметров: ' + ', '.join(list(STATS_TYPES.keys())))

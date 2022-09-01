@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from stats.models import Pressure, Stats
+from stats.models import Stat
 from users.models import Patient, User
 
 
@@ -17,20 +17,16 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ('telegram', 'user', 'age')
+        fields = ('id', 'telegram', 'user', 'age', 'created')
 
 
-class StatsSerializer(serializers.ModelSerializer):
+class StatSerializer(serializers.ModelSerializer):
     type = serializers.CharField(required=False)
+    patient = serializers.SlugRelatedField(
+        slug_field='telegram',
+        read_only=True
+    )
 
     class Meta:
-        model = Stats
-        fields = ('data', 'type', 'created')
-
-
-class PressureSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(required=False, default='pressure')
-
-    class Meta:
-        model = Pressure
-        fields = ('upper', 'lower', 'type', 'created')
+        model = Stat
+        fields = ('patient', 'data', 'type', 'created')

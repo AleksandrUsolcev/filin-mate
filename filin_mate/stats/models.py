@@ -1,13 +1,14 @@
 from core.models import StatsBaseModel
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from users.models import Patient
 
 
-class Stats(StatsBaseModel):
+class Stat(StatsBaseModel):
     """Показатели здоровья"""
     TYPES = (
         ('pulse', 'Пульс'),
+        ('upper', 'Верхнее давление'),
+        ('lower', 'Нижнее давление'),
         ('saturation', 'Сатурация'),
         ('sugar', 'Сахар в крови (ммоль)'),
         ('heat', 'Температура тела'),
@@ -30,32 +31,6 @@ class Stats(StatsBaseModel):
 
     def __str__(self):
         return f'{self.data}'
-
-
-class Pressure(StatsBaseModel):
-    """Давление"""
-    patient = models.ForeignKey(
-        Patient,
-        verbose_name='pressures',
-        on_delete=models.CASCADE
-    )
-    lower = models.PositiveIntegerField(
-        verbose_name='Нижнее',
-        validators=[
-            MinValueValidator(30),
-            MaxValueValidator(250)
-        ]
-    )
-    upper = models.PositiveIntegerField(
-        verbose_name='Верхнее',
-        validators=[
-            MinValueValidator(30),
-            MaxValueValidator(250)
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.upper} на {self.lower}'
 
 
 class Location(StatsBaseModel):
