@@ -110,6 +110,5 @@ class WeatherViewSet(ModelViewSet):
     queryset = Weather.objects.all().order_by('-created')
     serializer_class = WeatherSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterset_fields = ('location', 'temp', 'pressure', 'humidity')
-    search_fields = ('location__patient__telegram',
-                     'location', 'temp', 'pressure', 'humidity')
+    filterset_fields = ('temp', 'pressure', 'humidity')
+    search_fields = ('temp', 'pressure', 'humidity')
