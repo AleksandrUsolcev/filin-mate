@@ -1,15 +1,17 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from stats.models import Stat
+from stats.models import Location, Stat, Weather
 from users.models import Patient, User
 
 from . import exceptions as exc
-from .serializers import PatientSerializer, StatSerializer, TokenSerializer
+from .serializers import (LocationSerializer, PatientSerializer,
+                          StatSerializer, TokenSerializer, WeatherSerializer)
 
 
 class TokenViewSet(ModelViewSet):
@@ -86,3 +88,28 @@ class StatViewSet(ModelViewSet):
         if serializer.is_valid():
             serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LocationViewSet(ModelViewSet):
+    queryset = Location.objects.all().order_by('-created')
+    serializer_class = LocationSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_fields = ('patient', 'patient__telegram',
+                        'latitude', 'longitude')
+    search_fields = ('patient__telegram', 'latitude', 'longitude')
+
+    def perform_create(self, serializer):
+        patient = self.request.query_params.get('patient__telegram')
+        if not patient:
+            raise exc.MissingPatientParamException
+        patient = Patient.objects.get_or_create(telegram=patient)
+        serializer.save(patient=patient[0])
+
+
+class WeatherViewSet(ModelViewSet):
+    queryset = Weather.objects.all().order_by('-created')
+    serializer_class = WeatherSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_fields = ('location', 'temp', 'pressure', 'humidity')
+    search_fields = ('location__patient__telegram',
+                     'location', 'temp', 'pressure', 'humidity')

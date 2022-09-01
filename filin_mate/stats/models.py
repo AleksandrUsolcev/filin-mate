@@ -51,16 +51,12 @@ class Location(StatsBaseModel):
         return f'{self.latitude}, {self.longitude}'
 
 
-class Weather(models.Model):
+class Weather(StatsBaseModel):
     """Погода"""
     location = models.ForeignKey(
         Location,
         verbose_name='Местоположение',
         on_delete=models.CASCADE
-    )
-    created = models.DateTimeField(
-        verbose_name='Дата создания',
-        auto_now_add=True
     )
     temp = models.FloatField(
         verbose_name='Температура по Цельсию'
