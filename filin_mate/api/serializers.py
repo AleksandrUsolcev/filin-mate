@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from stats import models as stats
+from stats.models import Location, Stat, Weather
 from users.models import Patient, User
 
 
@@ -17,58 +17,34 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ('telegram', 'user', 'age')
+        fields = ('id', 'telegram', 'user', 'age', 'created')
 
 
-class PressureSerializer(serializers.ModelSerializer):
+class StatSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(required=False)
+    patient = serializers.SlugRelatedField(
+        slug_field='telegram',
+        read_only=True
+    )
+
     class Meta:
-        model = stats.Pressure
-        fields = ('lower', 'upper', 'created')
-
-
-class PulseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Pulse
-        fields = ('data', 'created')
-
-
-class SaturationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Saturation
-        fields = ('data', 'created')
-
-
-class BloodSugarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.BloodSugar
-        fields = ('data', 'created')
-
-
-class BodyHeatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.BodyHeat
-        fields = ('data', 'created')
-
-
-class WeightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Weight
-        fields = ('data', 'created')
-
-
-class HeightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.Height
-        fields = ('data', 'created')
-
-
-class SleepTimeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = stats.SleepTime
-        fields = ('data', 'created')
+        model = Stat
+        fields = ('patient', 'data', 'type', 'created')
 
 
 class LocationSerializer(serializers.ModelSerializer):
+    patient = serializers.SlugRelatedField(
+        slug_field='telegram',
+        read_only=True
+    )
+
     class Meta:
-        model = stats.Location
-        fields = ('latitude', 'longitude')
+        model = Location
+        fields = '__all__'
+
+
+class WeatherSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Weather
+        fields = '__all__'

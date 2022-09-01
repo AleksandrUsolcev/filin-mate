@@ -1,13 +1,17 @@
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
+from stats.models import Location, Stat, Weather
 from users.models import Patient, User
 
 from . import exceptions as exc
-from .serializers import PatientSerializer, TokenSerializer
+from .serializers import (LocationSerializer, PatientSerializer,
+                          StatSerializer, TokenSerializer, WeatherSerializer)
 
 
 class TokenViewSet(ModelViewSet):
@@ -33,31 +37,79 @@ class TokenViewSet(ModelViewSet):
 
 class PatientViewSet(ModelViewSet):
     serializer_class = PatientSerializer
-    queryset = Patient.objects.all()
+    queryset = Patient.objects.all().order_by('-created')
     lookup_field = 'telegram'
 
 
-class StatsViewSet(ModelViewSet):
-    def get_queryset(self):
-        stat_type = self.request.query_params.get('type')
-        telegram = self.request.query_params.get('user')
-        if not stat_type:
-            raise exc.MissingTypeParamException
-        elif stat_type not in exc.STATS_TYPES:
-            raise exc.WrongTypeParamException
-        if not telegram:
-            raise exc.MissingUserParamException
-        self.model = exc.STATS_TYPES[stat_type][0]
-        patient = Patient.objects.get_or_create(telegram=telegram)
-        queryset = self.model.objects.all().filter(patient=patient[0])
-        return queryset.order_by('-created',)
-
-    def get_serializer_class(self):
-        stat_type = self.request.query_params.get('type')
-        self.serializer_class = exc.STATS_TYPES[stat_type][1]
-        return self.serializer_class
+class StatViewSet(ModelViewSet):
+    serializer_class = StatSerializer
+    queryset = Stat.objects.all().order_by('-created')
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('patient', 'patient__telegram', 'type', 'data')
 
     def perform_create(self, serializer):
-        telegram = self.request.query_params.get('user')
-        patient = Patient.objects.get_or_create(telegram=telegram)
+        stat_type = self.request.query_params.get('type')
+        patient = self.request.query_params.get('patient__telegram')
+        if not patient:
+            raise exc.MissingPatientParamException
+        if not stat_type:
+            raise exc.MissingTypeParamException
+        patient = Patient.objects.get_or_create(telegram=patient)
+        serializer.save(patient=patient[0], type=stat_type)
+
+    def delete(self, request):
+        stat_type = self.request.query_params.get('type')
+        patient = self.request.query_params.get('patient__telegram')
+        if not patient:
+            raise exc.MissingPatientParamException
+        if not stat_type:
+            raise exc.MissingTypeParamException
+        patient = Patient.objects.get_or_create(telegram=patient)
+        queryset = Stat.objects.all().filter(
+            patient=patient[0], type=stat_type)
+        queryset.last().delete()
+        return Response(
+            {'detail': 'Последняя добавленная запись удалена'},
+            status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        stat_type = self.request.query_params.get('type')
+        patient = self.request.query_params.get('patient__telegram')
+        if not patient:
+            raise exc.MissingPatientParamException
+        if not stat_type:
+            raise exc.MissingTypeParamException
+        patient = Patient.objects.get_or_create(telegram=patient)
+        queryset = Stat.objects.all().filter(
+            patient=patient[0], type=stat_type)
+        serializer = StatSerializer(
+            queryset.last(),
+            data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LocationViewSet(ModelViewSet):
+    queryset = Location.objects.all().order_by('-created')
+    serializer_class = LocationSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_fields = ('patient', 'patient__telegram',
+                        'latitude', 'longitude')
+    search_fields = ('patient__telegram', 'latitude', 'longitude')
+
+    def perform_create(self, serializer):
+        patient = self.request.query_params.get('patient__telegram')
+        if not patient:
+            raise exc.MissingPatientParamException
+        patient = Patient.objects.get_or_create(telegram=patient)
         serializer.save(patient=patient[0])
+
+
+class WeatherViewSet(ModelViewSet):
+    queryset = Weather.objects.all().order_by('-created')
+    serializer_class = WeatherSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_fields = ('location', 'temp', 'pressure', 'humidity')
+    search_fields = ('location__patient__telegram',
+                     'location', 'temp', 'pressure', 'humidity')
