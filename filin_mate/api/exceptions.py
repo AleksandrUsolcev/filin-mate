@@ -18,7 +18,7 @@ class TokenPermissionException(APIException):
 
 class MissingPatientParamException(APIException):
     status_code = 400
-    default_detail = 'Не указан обязательный параметр patient__telegram'
+    default_detail = 'Не указан обязательный параметр patient'
 
 
 class MissingTypeParamException(APIException):
