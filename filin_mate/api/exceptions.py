@@ -24,3 +24,13 @@ class MissingPatientParamException(APIException):
 class MissingTypeParamException(APIException):
     status_code = 400
     default_detail = 'Не указан обязательный параметр type'
+
+
+class WrongTypeParamException(APIException):
+    status_code = 400
+    default_detail = 'Некорректный тип показателя здоровья'
+
+
+class WrongDataValueException(APIException):
+    status_code = 400
+    default_detail = 'Некорректное значение'
