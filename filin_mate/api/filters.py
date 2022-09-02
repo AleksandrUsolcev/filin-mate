@@ -4,6 +4,7 @@ from stats.models import Location, Stat
 
 class StatFilter(django_filters.FilterSet):
     patient = django_filters.NumberFilter(field_name='patient__telegram')
+    type = django_filters.CharFilter(field_name='type__slug')
 
     class Meta:
         model = Stat

@@ -21,7 +21,10 @@ class PatientSerializer(serializers.ModelSerializer):
 
 
 class StatSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(required=False)
+    type = serializers.SlugRelatedField(
+        slug_field='slug',
+        read_only=True
+    )
     patient = serializers.SlugRelatedField(
         slug_field='telegram',
         read_only=True

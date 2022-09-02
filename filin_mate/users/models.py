@@ -27,7 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Роль',
         choices=ROLES,
         max_length=10,
-        default='user'
+        default=USER
     )
     first_name = models.CharField(
         verbose_name='Имя',
@@ -115,7 +115,7 @@ class Patient(models.Model):
         null=True
     )
     created = models.DateTimeField(
-        verbose_name='Дата регистрации',
+        verbose_name='Дата добавления',
         default=timezone.now
     )
 
