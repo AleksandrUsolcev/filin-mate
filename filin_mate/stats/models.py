@@ -4,41 +4,66 @@ from rest_framework.exceptions import ValidationError
 from users.models import Patient
 
 
+class StatType(StatsBaseModel):
+    """Типы показателей"""
+
+    FLOAT = 'float'
+    INT = 'int'
+
+    TYPES = (
+        (FLOAT, 'Число с плавающей точкой'),
+        (INT, 'Целое число'),
+    )
+
+    slug = models.SlugField(
+        verbose_name='Уникальное название',
+        max_length=32,
+        unique=True
+    )
+    name = models.CharField(
+        verbose_name='Наименование',
+        max_length=120
+    )
+    description = models.TextField(
+        verbose_name='Описание',
+        max_length=512,
+        blank=True,
+        null=True
+    )
+    data_type = models.CharField(
+        verbose_name='Тип данных',
+        choices=TYPES,
+        max_length=10,
+        default=FLOAT
+    )
+    min_value = models.FloatField(
+        verbose_name='Минимальное значение'
+    )
+    max_value = models.FloatField(
+        verbose_name='Максимальное значение'
+    )
+
+    class Meta:
+        verbose_name = 'Тип данных'
+        verbose_name_plural = 'Типы данных'
+
+    def __str__(self):
+        return f'{self.name}'
+
+
 class Stat(StatsBaseModel):
     """Показатели здоровья"""
-    class StatsTypes(models.TextChoices):
-        pulse = 'pulse', 'Пульс'
-        upper = 'upper', 'Верхнее давление'
-        lower = 'lower', 'Нижнее давление'
-        saturation = 'saturation', 'Сатурация'
-        sugar = 'sugar', 'Сахар в крови (ммоль)'
-        heat = 'heat', 'Температура тела'
-        weight = 'weight', 'Вес (кг)'
-        height = 'height', 'Рост (см)'
-        sleep = 'sleep', 'Время сна'
-
-    validators = {
-        'pulse': [30, 300],
-        'upper': [20, 300],
-        'lower': [20, 300],
-        'saturation': [1, 100],
-        'sugar': [0, 70],
-        'heat': [31, 44],
-        'weight': [2, 450],
-        'height': [40, 260],
-        'sleep': [1, 24],
-    }
-
     patient = models.ForeignKey(
         Patient,
-        related_name='stats',
         verbose_name='Пациент',
+        related_name='stats',
         on_delete=models.CASCADE
     )
-    type = models.CharField(
+    type = models.ForeignKey(
+        StatType,
+        related_name='values',
         verbose_name='Тип',
-        choices=StatsTypes.choices,
-        max_length=20,
+        on_delete=models.CASCADE
     )
     data = models.FloatField(
         verbose_name='Показатель'
@@ -52,11 +77,11 @@ class Stat(StatsBaseModel):
         return f'{self.data}'
 
     def save(self, *args, **kwargs):
-        val = self.validators
         stat = self.data
-        if self.type in val.keys():
-            if (stat < val[self.type][0] or stat > val[self.type][1]):
-                raise ValidationError({'detail': 'Некорректное значение'})
+        min_value = self.type.min_value
+        max_value = self.type.max_value
+        if (stat < min_value or stat > max_value):
+            raise ValidationError({'detail': 'Некорректное значение'})
         super().save(*args, **kwargs)
 
 

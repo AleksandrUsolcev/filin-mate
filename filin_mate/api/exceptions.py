@@ -28,7 +28,7 @@ class MissingTypeParamException(APIException):
 
 class WrongTypeParamException(APIException):
     status_code = 400
-    default_detail = 'Некорректный тип показателя здоровья'
+    default_detail = 'Отсутствует указанный тип показателя здоровья'
 
 
 class DataNotFoundException(APIException):
