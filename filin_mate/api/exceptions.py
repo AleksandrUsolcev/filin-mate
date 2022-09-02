@@ -31,6 +31,6 @@ class WrongTypeParamException(APIException):
     default_detail = 'Некорректный тип показателя здоровья'
 
 
-class WrongDataValueException(APIException):
-    status_code = 400
-    default_detail = 'Некорректное значение'
+class DataNotFoundException(APIException):
+    status_code = 404
+    default_detail = 'Данные отсутствуют'

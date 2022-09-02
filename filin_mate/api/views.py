@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
@@ -47,21 +46,19 @@ class StatViewSet(ModelViewSet):
     queryset = Stat.objects.all().order_by('-created')
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('patient', 'patient__telegram', 'type', 'data')
+    http_method_names = ('post', 'get', 'delete', 'patch')
 
     def perform_create(self, serializer):
-        try:
-            stat_type = self.request.query_params.get('type')
-            patient = self.request.query_params.get('patient__telegram')
-            if not patient:
-                raise exc.MissingPatientParamException
-            if not stat_type:
-                raise exc.MissingTypeParamException
-            if stat_type not in Stat.StatsTypes:
-                raise exc.WrongTypeParamException
-            patient = Patient.objects.get_or_create(telegram=patient)
-            serializer.save(patient=patient[0], type=stat_type)
-        except ValidationError:
-            raise exc.WrongDataValueException
+        stat_type = self.request.query_params.get('type')
+        patient = self.request.query_params.get('patient__telegram')
+        if not patient:
+            raise exc.MissingPatientParamException
+        if not stat_type:
+            raise exc.MissingTypeParamException
+        if stat_type not in Stat.StatsTypes:
+            raise exc.WrongTypeParamException
+        patient = Patient.objects.get_or_create(telegram=patient)
+        serializer.save(patient=patient[0], type=stat_type)
 
     def delete(self, request):
         stat_type = self.request.query_params.get('type')
@@ -73,30 +70,35 @@ class StatViewSet(ModelViewSet):
         patient = Patient.objects.get_or_create(telegram=patient)
         queryset = Stat.objects.all().filter(
             patient=patient[0], type=stat_type)
+        if not queryset:
+            raise exc.DataNotFoundException
         queryset.last().delete()
         return Response(
             {'detail': 'Последняя добавленная запись удалена'},
             status=status.HTTP_200_OK)
 
     def patch(self, request):
-        try:
-            stat_type = self.request.query_params.get('type')
-            patient = self.request.query_params.get('patient__telegram')
-            if not patient:
-                raise exc.MissingPatientParamException
-            if not stat_type:
-                raise exc.MissingTypeParamException
-            patient = Patient.objects.get_or_create(telegram=patient)
-            queryset = Stat.objects.all().filter(
-                patient=patient[0], type=stat_type)
-            serializer = StatSerializer(
-                queryset.last(),
-                data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
+        stat_type = self.request.query_params.get('type')
+        patient = self.request.query_params.get('patient__telegram')
+        if not patient:
+            raise exc.MissingPatientParamException
+        if not stat_type:
+            raise exc.MissingTypeParamException
+        patient = Patient.objects.get_or_create(telegram=patient)
+        queryset = Stat.objects.all().filter(
+            patient=patient[0], type=stat_type)
+        if not queryset:
+            serializer = StatSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.validated_data['data']
+            Stat.objects.create(patient=patient[0], type=stat_type, data=data)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except ValidationError:
-            raise exc.WrongDataValueException
+        serializer = StatSerializer(
+            queryset.last(),
+            data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LocationViewSet(ModelViewSet):

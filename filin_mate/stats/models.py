@@ -1,6 +1,6 @@
 from core.models import StatsBaseModel
-from django.core.exceptions import ValidationError
 from django.db import models
+from rest_framework.exceptions import ValidationError
 from users.models import Patient
 
 
@@ -18,15 +18,15 @@ class Stat(StatsBaseModel):
         sleep = 'sleep', 'Время сна'
 
     validators = {
-        'pulse': ['Некорректное значение пульса', 30, 300],
-        'upper': ['Некорректное значение давления', 20, 300],
-        'lower': ['Некорректное значение давления', 20, 300],
-        'saturation': ['Некорректное значение сатурации', 1, 100],
-        'sugar': ['Некорректное значение сахара в крови', 0, 70],
-        'heat': ['Некорректное значение температуры тела', 31, 44],
-        'weight': ['Некорректное значение веса', 2, 450],
-        'height': ['Некорректное значение роста', 40, 260],
-        'sleep': ['Некорректное значение времени сна', 1, 24],
+        'pulse': [30, 300],
+        'upper': [20, 300],
+        'lower': [20, 300],
+        'saturation': [1, 100],
+        'sugar': [0, 70],
+        'heat': [31, 44],
+        'weight': [2, 450],
+        'height': [40, 260],
+        'sleep': [1, 24],
     }
 
     patient = models.ForeignKey(
@@ -55,8 +55,8 @@ class Stat(StatsBaseModel):
         val = self.validators
         stat = self.data
         if self.type in val.keys():
-            if (stat < val[self.type][1] or stat > val[self.type][2]):
-                raise ValidationError(val[self.type][0])
+            if (stat < val[self.type][0] or stat > val[self.type][1]):
+                raise ValidationError({'detail': 'Некорректное значение'})
         super().save(*args, **kwargs)
 
 
