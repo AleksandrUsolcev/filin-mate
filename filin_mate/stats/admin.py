@@ -1,3 +1,14 @@
 from django.contrib import admin
+from .models import Stat
 
-# Register your models here.
+
+class StatAdmin(admin.ModelAdmin):
+    list_display = (
+        'created',
+        'patient',
+        'type',
+        'data',
+    )
+
+
+admin.site.register(Stat, StatAdmin)

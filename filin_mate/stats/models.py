@@ -1,36 +1,63 @@
 from core.models import StatsBaseModel
 from django.db import models
+from rest_framework.exceptions import ValidationError
 from users.models import Patient
 
 
 class Stat(StatsBaseModel):
     """Показатели здоровья"""
-    TYPES = (
-        ('pulse', 'Пульс'),
-        ('upper', 'Верхнее давление'),
-        ('lower', 'Нижнее давление'),
-        ('saturation', 'Сатурация'),
-        ('sugar', 'Сахар в крови (ммоль)'),
-        ('heat', 'Температура тела'),
-        ('weight', 'Вес (кг)'),
-        ('height', 'Рост (см)'),
-        ('sleep', 'Время сна'),
-    )
+    class StatsTypes(models.TextChoices):
+        pulse = 'pulse', 'Пульс'
+        upper = 'upper', 'Верхнее давление'
+        lower = 'lower', 'Нижнее давление'
+        saturation = 'saturation', 'Сатурация'
+        sugar = 'sugar', 'Сахар в крови (ммоль)'
+        heat = 'heat', 'Температура тела'
+        weight = 'weight', 'Вес (кг)'
+        height = 'height', 'Рост (см)'
+        sleep = 'sleep', 'Время сна'
+
+    validators = {
+        'pulse': [30, 300],
+        'upper': [20, 300],
+        'lower': [20, 300],
+        'saturation': [1, 100],
+        'sugar': [0, 70],
+        'heat': [31, 44],
+        'weight': [2, 450],
+        'height': [40, 260],
+        'sleep': [1, 24],
+    }
 
     patient = models.ForeignKey(
         Patient,
-        verbose_name='stats',
+        related_name='stats',
+        verbose_name='Пациент',
         on_delete=models.CASCADE
     )
     type = models.CharField(
-        verbose_name='Показатель',
-        choices=TYPES,
+        verbose_name='Тип',
+        choices=StatsTypes.choices,
         max_length=20,
     )
-    data = models.FloatField()
+    data = models.FloatField(
+        verbose_name='Показатель'
+    )
+
+    class Meta:
+        verbose_name = 'Статистика'
+        verbose_name_plural = 'Статистика'
 
     def __str__(self):
         return f'{self.data}'
+
+    def save(self, *args, **kwargs):
+        val = self.validators
+        stat = self.data
+        if self.type in val.keys():
+            if (stat < val[self.type][0] or stat > val[self.type][1]):
+                raise ValidationError({'detail': 'Некорректное значение'})
+        super().save(*args, **kwargs)
 
 
 class Location(StatsBaseModel):
