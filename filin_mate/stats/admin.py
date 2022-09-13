@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Stat, StatType
+from .models import Stat, StatType, Location, Weather
 
 
 class StatAdmin(admin.ModelAdmin):
@@ -21,5 +21,24 @@ class StatTypeAdmin(admin.ModelAdmin):
     )
 
 
+class LocationAdmin(admin.ModelAdmin):
+    list_display = (
+        'patient',
+        'latitude',
+        'longitude'
+    )
+
+
+class WeatherAdmin(admin.ModelAdmin):
+    list_display = (
+        'location',
+        'temp',
+        'pressure',
+        'humidity',
+    )
+
+
 admin.site.register(Stat, StatAdmin)
 admin.site.register(StatType, StatTypeAdmin)
+admin.site.register(Location, LocationAdmin)
+admin.site.register(Weather, WeatherAdmin)

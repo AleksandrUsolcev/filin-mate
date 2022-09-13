@@ -49,30 +49,26 @@ class StatViewSet(ModelViewSet):
     filterset_class = StatFilter
     http_method_names = ('post', 'get', 'delete', 'patch')
 
-    def perform_create(self, serializer):
-        stat_type = self.request.query_params.get('type')
-        patient = self.request.query_params.get('patient')
-        available_type = StatType.objects.filter(slug=stat_type)
-        if not patient:
+    def define_params(self):
+        self.stat_type = self.request.query_params.get('type')
+        self.patient = self.request.query_params.get('patient')
+        self.available_type = StatType.objects.filter(slug=self.stat_type)
+        if not self.patient:
             raise exc.MissingPatientParamException
-        if not stat_type:
+        if not self.stat_type:
             raise exc.MissingTypeParamException
-        if not available_type.exists():
+        if not self.available_type.exists():
             raise exc.WrongTypeParamException
-        patient = Patient.objects.get_or_create(telegram=patient)
-        serializer.save(patient=patient[0], type=available_type[0])
+        self.patient = Patient.objects.get_or_create(telegram=self.patient)
+
+    def perform_create(self, serializer):
+        self.define_params()
+        serializer.save(patient=self.patient[0], type=self.available_type[0])
 
     def delete(self, request):
-        stat_type = self.request.query_params.get('type')
-        patient = self.request.query_params.get('patient')
-        available_type = StatType.objects.filter(slug=stat_type)
-        if not patient:
-            raise exc.MissingPatientParamException
-        if not stat_type:
-            raise exc.MissingTypeParamException
-        patient = Patient.objects.get_or_create(telegram=patient)
+        self.define_params()
         queryset = Stat.objects.all().filter(
-            patient=patient[0], type=available_type[0])
+            patient=self.patient[0], type=self.available_type[0])
         if not queryset:
             raise exc.DataNotFoundException
         queryset.last().delete()
@@ -81,23 +77,16 @@ class StatViewSet(ModelViewSet):
             status=status.HTTP_200_OK)
 
     def patch(self, request):
-        stat_type = self.request.query_params.get('type')
-        patient = self.request.query_params.get('patient')
-        available_type = StatType.objects.filter(slug=stat_type)
-        if not patient:
-            raise exc.MissingPatientParamException
-        if not stat_type:
-            raise exc.MissingTypeParamException
-        patient = Patient.objects.get_or_create(telegram=patient)
+        self.define_params()
         queryset = Stat.objects.all().filter(
-            patient=patient[0], type=available_type[0])
+            patient=self.patient[0], type=self.available_type[0])
         if not queryset:
             serializer = StatSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.validated_data['data']
             Stat.objects.create(
-                patient=patient[0],
-                type=available_type[0],
+                patient=self.patient[0],
+                type=self.available_type[0],
                 data=data)
             return Response(serializer.data, status=status.HTTP_200_OK)
         serializer = StatSerializer(
