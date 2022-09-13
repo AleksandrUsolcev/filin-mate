@@ -99,6 +99,10 @@ class Location(StatsBaseModel):
         verbose_name='Долгота'
     )
 
+    class Meta:
+        verbose_name = 'Местоположение'
+        verbose_name_plural = 'Местоположение'
+
     def __str__(self):
         return f'{self.latitude}, {self.longitude}'
 
@@ -119,6 +123,10 @@ class Weather(StatsBaseModel):
     humidity = models.PositiveBigIntegerField(
         verbose_name='Влажность воздуха %'
     )
+
+    class Meta:
+        verbose_name = 'Погода'
+        verbose_name_plural = 'Погода'
 
     def __str__(self):
         return f'{self.temp} C, {self.pressure} р/с, {self.humidity}%'
