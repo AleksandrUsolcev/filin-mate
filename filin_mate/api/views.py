@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from stats.models import Location, Stat, StatType, Weather
+from stats.models import Location, Stat, Weather
 from users.models import Patient, User
 
 from . import exceptions as exc
@@ -49,53 +49,6 @@ class StatViewSet(ModelViewSet):
     filterset_class = StatFilter
     http_method_names = ('post', 'get', 'delete', 'patch')
 
-    def define_params(self):
-        self.stat_type = self.request.query_params.get('type')
-        self.patient = self.request.query_params.get('patient')
-        self.available_type = StatType.objects.filter(slug=self.stat_type)
-        if not self.patient:
-            raise exc.MissingPatientParamException
-        if not self.stat_type:
-            raise exc.MissingTypeParamException
-        if not self.available_type.exists():
-            raise exc.WrongTypeParamException
-        self.patient = Patient.objects.get_or_create(telegram=self.patient)
-
-    def perform_create(self, serializer):
-        self.define_params()
-        serializer.save(patient=self.patient[0], type=self.available_type[0])
-
-    def delete(self, request):
-        self.define_params()
-        queryset = Stat.objects.all().filter(
-            patient=self.patient[0], type=self.available_type[0])
-        if not queryset:
-            raise exc.DataNotFoundException
-        queryset.last().delete()
-        return Response(
-            {'detail': 'Последняя добавленная запись удалена'},
-            status=status.HTTP_200_OK)
-
-    def patch(self, request):
-        self.define_params()
-        queryset = Stat.objects.all().filter(
-            patient=self.patient[0], type=self.available_type[0])
-        if not queryset:
-            serializer = StatSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.validated_data['data']
-            Stat.objects.create(
-                patient=self.patient[0],
-                type=self.available_type[0],
-                data=data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer = StatSerializer(
-            queryset.last(),
-            data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 class LocationViewSet(ModelViewSet):
     queryset = Location.objects.all().order_by('-created')
@@ -103,13 +56,6 @@ class LocationViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = LocationFilter
     search_fields = ('latitude', 'longitude')
-
-    def perform_create(self, serializer):
-        patient = self.request.query_params.get('patient')
-        if not patient:
-            raise exc.MissingPatientParamException
-        patient = Patient.objects.get_or_create(telegram=patient)
-        serializer.save(patient=patient[0])
 
 
 class WeatherViewSet(ModelViewSet):

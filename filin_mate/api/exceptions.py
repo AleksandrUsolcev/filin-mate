@@ -16,21 +16,21 @@ class TokenPermissionException(APIException):
     default_detail = 'У данного пользователя нет прав для получения токена'
 
 
-class MissingPatientParamException(APIException):
-    status_code = 400
-    default_detail = 'Не указан обязательный параметр patient'
+# class MissingPatientParamException(APIException):
+#     status_code = 400
+#     default_detail = 'Не указан обязательный параметр patient'
 
 
-class MissingTypeParamException(APIException):
-    status_code = 400
-    default_detail = 'Не указан обязательный параметр type'
+# class MissingTypeParamException(APIException):
+#     status_code = 400
+#     default_detail = 'Не указан обязательный параметр type'
 
 
-class WrongTypeParamException(APIException):
-    status_code = 400
-    default_detail = 'Отсутствует указанный тип показателя здоровья'
+# class WrongTypeParamException(APIException):
+#     status_code = 400
+#     default_detail = 'Отсутствует указанный тип показателя здоровья'
 
 
-class DataNotFoundException(APIException):
-    status_code = 404
-    default_detail = 'Данные отсутствуют'
+# class DataNotFoundException(APIException):
+#     status_code = 404
+#     default_detail = 'Данные отсутствуют'
