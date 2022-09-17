@@ -40,6 +40,16 @@ class PatientViewSet(ModelViewSet):
     serializer_class = PatientSerializer
     queryset = Patient.objects.all().order_by('-created')
     lookup_field = 'telegram'
+    filterset_fields = ('telegram', 'age')
+    search_fields = ('telegram', 'age')
+
+    def get_queryset(self):
+        telegram = self.request.query_params.get('telegram')
+        if telegram:
+            telegram = Patient.objects.filter(telegram=telegram)
+            if not telegram.exists():
+                raise exc.UserNotFoundException
+        return super().get_queryset()
 
 
 class StatViewSet(ModelViewSet):
@@ -49,52 +59,18 @@ class StatViewSet(ModelViewSet):
     filterset_class = StatFilter
     http_method_names = ('post', 'get', 'delete', 'patch')
 
-    def define_params(self):
-        self.stat_type = self.request.query_params.get('type')
-        self.patient = self.request.query_params.get('patient')
-        self.available_type = StatType.objects.filter(slug=self.stat_type)
-        if not self.patient:
-            raise exc.MissingPatientParamException
-        if not self.stat_type:
-            raise exc.MissingTypeParamException
-        if not self.available_type.exists():
-            raise exc.WrongTypeParamException
-        self.patient = Patient.objects.get_or_create(telegram=self.patient)
-
-    def perform_create(self, serializer):
-        self.define_params()
-        serializer.save(patient=self.patient[0], type=self.available_type[0])
-
-    def delete(self, request):
-        self.define_params()
-        queryset = Stat.objects.all().filter(
-            patient=self.patient[0], type=self.available_type[0])
-        if not queryset:
-            raise exc.DataNotFoundException
-        queryset.last().delete()
-        return Response(
-            {'detail': 'Последняя добавленная запись удалена'},
-            status=status.HTTP_200_OK)
-
-    def patch(self, request):
-        self.define_params()
-        queryset = Stat.objects.all().filter(
-            patient=self.patient[0], type=self.available_type[0])
-        if not queryset:
-            serializer = StatSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.validated_data['data']
-            Stat.objects.create(
-                patient=self.patient[0],
-                type=self.available_type[0],
-                data=data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer = StatSerializer(
-            queryset.last(),
-            data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        stat_type = self.request.query_params.get('type')
+        patient = self.request.query_params.get('patient')
+        if patient:
+            patient = Patient.objects.filter(telegram=patient)
+            if not patient.exists():
+                raise exc.UserNotFoundException
+        if stat_type:
+            stat_type = StatType.objects.filter(slug=stat_type)
+            if not stat_type.exists():
+                raise exc.WrongTypeParamException
+        return super().get_queryset()
 
 
 class LocationViewSet(ModelViewSet):
@@ -103,13 +79,6 @@ class LocationViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = LocationFilter
     search_fields = ('latitude', 'longitude')
-
-    def perform_create(self, serializer):
-        patient = self.request.query_params.get('patient')
-        if not patient:
-            raise exc.MissingPatientParamException
-        patient = Patient.objects.get_or_create(telegram=patient)
-        serializer.save(patient=patient[0])
 
 
 class WeatherViewSet(ModelViewSet):
