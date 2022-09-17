@@ -1,6 +1,6 @@
+from api import exceptions as exc
 from core.models import StatsBaseModel
 from django.db import models
-from rest_framework.exceptions import ValidationError
 from users.models import Patient
 
 
@@ -81,7 +81,7 @@ class Stat(StatsBaseModel):
         min_value = self.type.min_value
         max_value = self.type.max_value
         if (stat < min_value or stat > max_value):
-            raise ValidationError({'detail': 'Некорректное значение'})
+            raise exc.StatIncorrectValueException
         super().save(*args, **kwargs)
 
 

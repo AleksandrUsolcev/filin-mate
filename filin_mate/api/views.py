@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from stats.models import Location, Stat, Weather
+from stats.models import Location, Stat, StatType, Weather
 from users.models import Patient, User
 
 from . import exceptions as exc
@@ -40,6 +40,16 @@ class PatientViewSet(ModelViewSet):
     serializer_class = PatientSerializer
     queryset = Patient.objects.all().order_by('-created')
     lookup_field = 'telegram'
+    filterset_fields = ('telegram', 'age')
+    search_fields = ('telegram', 'age')
+
+    def get_queryset(self):
+        telegram = self.request.query_params.get('telegram')
+        if telegram:
+            telegram = Patient.objects.filter(telegram=telegram)
+            if not telegram.exists():
+                raise exc.UserNotFoundException
+        return super().get_queryset()
 
 
 class StatViewSet(ModelViewSet):
@@ -48,6 +58,19 @@ class StatViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = StatFilter
     http_method_names = ('post', 'get', 'delete', 'patch')
+
+    def get_queryset(self):
+        stat_type = self.request.query_params.get('type')
+        patient = self.request.query_params.get('patient')
+        if patient:
+            patient = Patient.objects.filter(telegram=patient)
+            if not patient.exists():
+                raise exc.UserNotFoundException
+        if stat_type:
+            stat_type = StatType.objects.filter(slug=stat_type)
+            if not stat_type.exists():
+                raise exc.WrongTypeParamException
+        return super().get_queryset()
 
 
 class LocationViewSet(ModelViewSet):
