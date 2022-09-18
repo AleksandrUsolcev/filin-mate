@@ -5,7 +5,8 @@ import requests
 from dateutil import parser
 
 import exceptions as exc
-from settings import DIFF_TIME, ENDPOINT, ERRORS, HEADERS
+from errors import API_ERRORS
+from settings import DIFF_TIME, ENDPOINT, HEADERS
 
 
 def time_difference(response_json: dict) -> float:
@@ -30,7 +31,7 @@ def get_path(request_type: str, data: dict) -> str:
 def error_filter(response: dict) -> dict:
     if 'error' in response:
         error = response.get('error')
-        raise ERRORS.get(error)
+        raise API_ERRORS.get(error)
     return response
 
 

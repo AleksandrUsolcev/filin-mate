@@ -2,27 +2,28 @@ import os
 
 from dotenv import load_dotenv
 
-import exceptions as exc
-
 load_dotenv()
 
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 FILIN_TOKEN = os.getenv('FILIN_TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
+
 ENDPOINT = os.getenv('ENDPOINT', default='http://127.0.0.1:8000/api/1.0/')
 
 HEADERS = {'Authorization': 'Bearer ' + FILIN_TOKEN}
 
-DIFF_TIME = 0
+DIFF_TIME = 2
 
-STATS_TYPES = ['pulse', 'saturation', 'pressure',
-               'sugar', 'heat', 'sleep', 'weight', 'height']
-
-ERRORS = {
-    'user_not_found': exc.UserNotFoundError,
-    'stat_type_not_found': exc.StatTypeNotFoundError,
-    'stat_incorrect_value': exc.IncorrectValueError
-}
+STATS_TYPES = [
+    'pulse',
+    'saturation',
+    'pressure',
+    'sugar',
+    'heat',
+    'sleep',
+    'weight',
+    'height'
+]
 
 
 # logger = logging.getLogger(__name__)
