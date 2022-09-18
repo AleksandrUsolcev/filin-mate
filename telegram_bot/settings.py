@@ -12,15 +12,17 @@ FILIN_TOKEN = os.getenv('FILIN_TOKEN')
 
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 
-LATITUDE = 55.777110
-
-LONGITUDE = 37.508503
-
 ENDPOINT = os.getenv('ENDPOINT', default='http://127.0.0.1:8000/api/1.0/')
 
 HEADERS = {'Authorization': 'Bearer ' + FILIN_TOKEN}
 
 DIFF_TIME = 2
+
+WEATHER_PARSE_INTERVAL = 30
+
+LATITUDE = 55.777110
+
+LONGITUDE = 37.508503
 
 STATS_TYPES = [
     'pulse',
