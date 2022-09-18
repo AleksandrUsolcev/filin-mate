@@ -31,7 +31,7 @@ class LocationAdmin(admin.ModelAdmin):
 
 class WeatherAdmin(admin.ModelAdmin):
     list_display = (
-        'location',
+        'code',
         'temp',
         'pressure',
         'humidity',

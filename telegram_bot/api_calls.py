@@ -1,29 +1,12 @@
-import os
 from datetime import datetime
 from http import HTTPStatus
 
 import requests
 from dateutil import parser
-from dotenv import load_dotenv
 
 import exceptions as exc
-
-load_dotenv()
-
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-FILIN_TOKEN = os.getenv('FILIN_TOKEN')
-WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
-ENDPOINT = os.getenv('ENDPOINT', default='http://127.0.0.1:8000/api/1.0/')
-
-HEADERS = {'Authorization': 'Bearer ' + FILIN_TOKEN}
-
-DIFF_TIME = 15
-
-ERRORS = {
-    'user_not_found': exc.UserNotFoundError,
-    'stat_type_not_found': exc.StatTypeNotFoundError,
-    'stat_incorrect_value': exc.IncorrectValueError
-}
+from errors import API_ERRORS
+from settings import DIFF_TIME, ENDPOINT, HEADERS
 
 
 def time_difference(response_json: dict) -> float:
@@ -41,14 +24,14 @@ def get_path(request_type: str, data: dict) -> str:
                   f'&type={data.get("type")}&limit=1'),
         'patients': f'patients/?telegram={data.get("telegram")}'
     }
-    path = ENDPOINT + pathes[request_type]
+    path = ENDPOINT + pathes.get(request_type)
     return path
 
 
 def error_filter(response: dict) -> dict:
     if 'error' in response:
-        error = response['error']
-        raise ERRORS[error]
+        error = response.get('error')
+        raise API_ERRORS.get(error)
     return response
 
 
@@ -85,10 +68,7 @@ def patient_post(telegram_id: int):
 
 
 def patient_patch_age(telegram_id: int, age: str):
-    check_data = {
-        'telegram': telegram_id
-    }
-    check_response('patients', check_data)
+    check_response('patients', {'telegram': telegram_id})
     age = str(parser.parse(age)).split()[0]
     patch_data = {
         'age': age
