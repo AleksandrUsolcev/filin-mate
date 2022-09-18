@@ -12,6 +12,10 @@ FILIN_TOKEN = os.getenv('FILIN_TOKEN')
 
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 
+LATITUDE = 55.777110
+
+LONGITUDE = 37.508503
+
 ENDPOINT = os.getenv('ENDPOINT', default='http://127.0.0.1:8000/api/1.0/')
 
 HEADERS = {'Authorization': 'Bearer ' + FILIN_TOKEN}

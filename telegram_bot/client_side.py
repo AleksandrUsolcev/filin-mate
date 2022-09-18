@@ -20,6 +20,7 @@ async def stats_add(message: types.Message):
     except UserNotFoundError:
         api.patient_post(telegram_id)
         api.stats_post(telegram_id, stat_type, data)
+        logger.info(f'Новый пользователь telegram_id({telegram_id})')
         await bot.send_message(telegram_id, 'Данные успешно внесены')
     except Exception as error:
         info = f' (telegram_id({telegram_id}) stat({stat_type}) data({data}))'

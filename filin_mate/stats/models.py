@@ -109,10 +109,14 @@ class Location(StatsBaseModel):
 
 class Weather(StatsBaseModel):
     """Погода"""
-    location = models.ForeignKey(
-        Location,
-        verbose_name='Местоположение',
-        on_delete=models.CASCADE
+    # IN FUTURE
+    # location = models.ForeignKey(
+    #     Location,
+    #     verbose_name='Местоположение',
+    #     on_delete=models.CASCADE
+    # )
+    code = models.IntegerField(
+        verbose_name='Вид осадков'
     )
     temp = models.FloatField(
         verbose_name='Температура по Цельсию'
