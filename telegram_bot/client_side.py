@@ -3,7 +3,7 @@ from aiogram.dispatcher import Dispatcher
 
 import api_calls as api
 from exceptions import UserNotFoundError
-from settings import STATS_TYPES, TELEGRAM_TOKEN
+from settings import STATS_TYPES, TELEGRAM_TOKEN, logger
 
 bot = Bot(token=str(TELEGRAM_TOKEN))
 dp = Dispatcher(bot)
@@ -22,7 +22,9 @@ async def stats_add(message: types.Message):
         api.stats_post(telegram_id, stat_type, data)
         await bot.send_message(telegram_id, 'Данные успешно внесены')
     except Exception as error:
-        await bot.send_message(telegram_id, error)
+        info = f' (telegram_id({telegram_id}) stat({stat_type}) data({data}))'
+        logger.info(str(error) + info)
+        await bot.send_message(telegram_id, error.message)
 
 
 # @dp.message_handler()

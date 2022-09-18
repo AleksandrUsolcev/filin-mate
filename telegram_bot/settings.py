@@ -1,11 +1,15 @@
+import logging
 import os
+from logging.handlers import RotatingFileHandler
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+
 FILIN_TOKEN = os.getenv('FILIN_TOKEN')
+
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 
 ENDPOINT = os.getenv('ENDPOINT', default='http://127.0.0.1:8000/api/1.0/')
@@ -25,16 +29,21 @@ STATS_TYPES = [
     'height'
 ]
 
+LOGS_NAME = 'history.log'
 
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.INFO)
-# handler = RotatingFileHandler(f'logs/{__file__}.log', maxBytes=50000000,
-#                               backupCount=10)
+LOGS_MAX_BYTES = 10000000
 
-# formatter = logging.Formatter(
-#     '%(asctime)s, %(levelname)s, %(message)s *** (%(name)s, '
-#     'имя файла: %(filename)s, функция: %(funcName)s, строка: %(lineno)s)'
-# )
+LOGS_COUNT = 5
 
-# handler.setFormatter(formatter)
-# logger.addHandler(handler)
+logger = logging.getLogger(LOGS_NAME)
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(LOGS_NAME, maxBytes=LOGS_MAX_BYTES,
+                              backupCount=LOGS_COUNT)
+
+formatter = logging.Formatter(
+    '%(asctime)s, %(levelname)s, %(message)s *** (%(name)s, '
+    'файл: %(filename)s, функция: %(funcName)s, строка: %(lineno)s)'
+)
+
+handler.setFormatter(formatter)
+logger.addHandler(handler)
