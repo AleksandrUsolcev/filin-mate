@@ -13,4 +13,6 @@ async def on_startup(_):
 
 if __name__ == '__main__':
     logger.info('Старт работы бота')
-    executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+    executor.start_polling(dp, skip_updates=True)
+    # executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+    logger.info('Завершение работы бота')
