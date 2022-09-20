@@ -3,15 +3,20 @@ from exceptions import IncorrectValueError
 
 def stats_converter(data: 'str', stat_type: 'str') -> list:
     if not data.strip():
-        print('строка пустая')
-    data = data.split()
-    data = [float(num) for num in data if num.isdigit()]
+        raise IncorrectValueError
+    data = data.replace(',', '.').split()
+    nums = []
+    for num in data:
+        try:
+            nums.append(float(num))
+        except ValueError:
+            continue
     if stat_type == 'pressure':
-        if len(data) == 2:
-            return sorted(data)
+        if len(nums) == 2:
+            return sorted(nums)
         else:
             raise IncorrectValueError
-    if len(data) == 1:
-        return data
+    if len(nums) == 1:
+        return nums
     else:
         raise IncorrectValueError

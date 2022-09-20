@@ -25,14 +25,14 @@ LATITUDE = 55.777110
 LONGITUDE = 37.508503
 
 STATS_TYPES = {
-    'пульс': 'pulse',
-    'сатурация': 'saturation',
-    'давление': 'pressure',
-    'сахар': 'sugar',
-    'температура': 'heat',
-    'сон': 'sleep',
-    'вес': 'weight',
-    'рост': 'height'
+    'pulse': 0,
+    'saturation': 1,
+    'pressure': 2,
+    'sugar': 3,
+    'heat': 4,
+    'sleep': 5,
+    'weight': 6,
+    'height': 7
 }
 
 LOGS_NAME = 'history.log'
