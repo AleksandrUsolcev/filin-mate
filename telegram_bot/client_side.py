@@ -1,35 +1,65 @@
 from aiogram import Bot, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
 
 import api_calls as api
+from converters import stats_converter
 from exceptions import UserNotFoundError
+from messages import STATS_MESSAGES
 from settings import STATS_TYPES, TELEGRAM_TOKEN, logger
+from states import StatStates
 
 bot = Bot(token=str(TELEGRAM_TOKEN))
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-@dp.message_handler(commands=STATS_TYPES)
+@dp.message_handler(commands=list(STATS_TYPES.keys()))
 async def stats_add(message: types.Message):
     stat_type = message.get_command().replace('/', '')
     data = message.get_args()
     telegram_id = message.from_user.id
-    try:
-        api.stats_post(telegram_id, stat_type, data)
-        await bot.send_message(telegram_id, 'Данные успешно внесены')
-    except UserNotFoundError:
-        api.patient_post(telegram_id)
-        api.stats_post(telegram_id, stat_type, data)
-        logger.info(f'Новый пользователь telegram_id({telegram_id})')
-        await bot.send_message(telegram_id, 'Данные успешно внесены')
-    except Exception as error:
-        info = f' (telegram_id({telegram_id}) stat({stat_type}) data({data}))'
-        logger.info(str(error) + info)
-        await bot.send_message(telegram_id, error.message)
+    state = dp.current_state(user=message.from_user.id)
+    await state.reset_state()
+    if data.strip():
+        try:
+            data = stats_converter(message.get_args(), stat_type)
+            if stat_type == 'pressure':
+                api.stats_post(telegram_id, 'lower', data[0])
+                api.stats_post(telegram_id, 'upper', data[1])
+            else:
+                api.stats_post(telegram_id, stat_type, data[0])
+            await bot.send_message(telegram_id, 'Данные успешно внесены')
+        except UserNotFoundError:
+            api.patient_post(telegram_id)
+            logger.info(f'Новый пользователь telegram_id({telegram_id})')
+            await stats_add(message)
+        except Exception as error:
+            info = (f' (telegram_id({telegram_id}) '
+                    f'stat({stat_type}) data({data}))')
+            logger.error(str(error) + info)
+            await bot.send_message(telegram_id, error.message)
+    else:
+        await state.set_state(stat_type)
+        await message.reply(STATS_MESSAGES[stat_type], reply=False)
 
 
-# @dp.message_handler()
-# async def echo_send(message: types.Message):
-#     # await message.answer(message.text)
-#     # await message.reply(message.text)
-#     await bot.send_message(message.from_user.id, message.from_user.first_name)
+@dp.message_handler(state=StatStates.all())
+async def state_stats_add(message: types.Message):
+    state = dp.current_state(user=message.from_user.id)
+    telegram_id = message.from_user.id
+    data = message.text
+    if data.strip():
+        try:
+            data = stats_converter(message.text, await state.get_state())
+            if await state.get_state() == 'pressure':
+                api.stats_post(telegram_id, 'lower', data[0])
+                api.stats_post(telegram_id, 'upper', data[1])
+            else:
+                api.stats_post(telegram_id, await state.get_state(), data[0])
+            await bot.send_message(telegram_id, 'Данные успешно внесены')
+        except Exception as error:
+            info = (f' (telegram_id({telegram_id}) '
+                    f'stat({await state.get_state()}) data({data}))')
+            logger.error(str(error) + info)
+            await bot.send_message(telegram_id, error.message)
+    await state.reset_state()

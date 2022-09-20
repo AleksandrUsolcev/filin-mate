@@ -12,26 +12,28 @@ FILIN_TOKEN = os.getenv('FILIN_TOKEN')
 
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 
-LATITUDE = 55.777110
-
-LONGITUDE = 37.508503
-
 ENDPOINT = os.getenv('ENDPOINT', default='http://127.0.0.1:8000/api/1.0/')
 
 HEADERS = {'Authorization': 'Bearer ' + FILIN_TOKEN}
 
 DIFF_TIME = 2
 
-STATS_TYPES = [
-    'pulse',
-    'saturation',
-    'pressure',
-    'sugar',
-    'heat',
-    'sleep',
-    'weight',
-    'height'
-]
+WEATHER_PARSE_INTERVAL = 30
+
+LATITUDE = 55.777110
+
+LONGITUDE = 37.508503
+
+STATS_TYPES = {
+    'pulse': 0,
+    'saturation': 1,
+    'pressure': 2,
+    'sugar': 3,
+    'heat': 4,
+    'sleep': 5,
+    'weight': 6,
+    'height': 7
+}
 
 LOGS_NAME = 'history.log'
 

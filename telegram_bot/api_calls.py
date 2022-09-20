@@ -1,5 +1,4 @@
 from datetime import datetime
-from http import HTTPStatus
 
 import requests
 from dateutil import parser
@@ -41,7 +40,7 @@ def check_response(request_type: str, data: dict) -> dict:
     return error_filter(response.json())
 
 
-def stats_post(patient: int, stat_type: str, data: float):
+def stats_post(patient: int, stat_type: str, data: float) -> object:
     post_data = {
         'patient': patient,
         'type': stat_type,
@@ -53,26 +52,38 @@ def stats_post(patient: int, stat_type: str, data: float):
         path = 'stats/'
         response = requests.post(ENDPOINT + path, post_data, headers=HEADERS)
         error_filter(response.json())
-        return HTTPStatus.OK
+        return response
     else:
         raise exc.TimeDifferenceError
 
 
-def patient_post(telegram_id: int):
+def patient_post(telegram_id: int) -> object:
     post_data = {
         'telegram': telegram_id
     }
     path = 'patients/'
-    requests.post(ENDPOINT + path, post_data, headers=HEADERS)
-    return HTTPStatus.OK
+    response = requests.post(ENDPOINT + path, post_data, headers=HEADERS)
+    return response
 
 
-def patient_patch_age(telegram_id: int, age: str):
+def patient_patch_age(telegram_id: int, age: str) -> object:
     check_response('patients', {'telegram': telegram_id})
     age = str(parser.parse(age)).split()[0]
     patch_data = {
         'age': age
     }
     path = f'patients/{telegram_id}/'
-    requests.patch(ENDPOINT + path, patch_data, headers=HEADERS)
-    return HTTPStatus.OK
+    response = requests.patch(ENDPOINT + path, patch_data, headers=HEADERS)
+    return response
+
+
+def weather_post(code: int, temp: int, pressure: int, humidity: int) -> object:
+    post_data = {
+        'code': code,
+        'temp': temp,
+        'pressure': pressure,
+        'humidity': humidity
+    }
+    path = 'weathers/'
+    response = requests.post(ENDPOINT + path, post_data, headers=HEADERS)
+    return response
