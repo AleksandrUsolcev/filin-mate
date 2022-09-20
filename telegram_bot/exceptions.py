@@ -36,7 +36,8 @@ class StatTypeNotFoundError(Exception):
 class IncorrectValueError(Exception):
 
     def __init__(self):
-        self.message = 'Некорректные данные, попробуйте снова'
+        self.message = ('Некорректные данные, попробуйте снова, выбрав {stat} '
+                        'или добавьте другие показатели')
 
     def __str__(self):
         error = 'Некорректные входные данные'

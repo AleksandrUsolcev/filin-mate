@@ -27,7 +27,8 @@ async def help(message: types.Message):
     state = dp.current_state(user=message.from_user.id)
     user = message.from_user.id
     await state.reset_state()
-    await bot.send_message(user, HELP_MESSAGES.get('message'))
+    await bot.send_message(user, HELP_MESSAGES.get('message'),
+                           parse_mode='html')
 
 
 @dp.message_handler(commands=list(STATS_TYPES.keys()))
@@ -54,13 +55,14 @@ async def stats_add(message: types.Message):
             info = (f' (telegram_id({telegram_id}) '
                     f'stat({stat_type}) data({data}))')
             logger.error(str(error) + info)
-            await bot.send_message(telegram_id, error.message)
+            error = error.message.format(stat=message.get_command())
+            await bot.send_message(telegram_id, error)
     else:
         await state.set_state(stat_type)
         await message.reply(STATS_MESSAGES[stat_type], reply=False)
 
 
-@dp.message_handler(state=StatStates.all())
+@ dp.message_handler(state=StatStates.all())
 async def state_stats_add(message: types.Message):
     state = dp.current_state(user=message.from_user.id)
     telegram_id = message.from_user.id
@@ -74,9 +76,14 @@ async def state_stats_add(message: types.Message):
             else:
                 api.stats_post(telegram_id, await state.get_state(), data[0])
             await bot.send_message(telegram_id, 'Данные успешно внесены')
+        except UserNotFoundError:
+            api.patient_post(telegram_id)
+            logger.info(f'Новый пользователь telegram_id({telegram_id})')
+            await state_stats_add(message)
         except Exception as error:
             info = (f' (telegram_id({telegram_id}) '
                     f'stat({await state.get_state()}) data({data}))')
             logger.error(str(error) + info)
-            await bot.send_message(telegram_id, error.message)
+            error = error.message.format(stat=('/' + await state.get_state()))
+            await bot.send_message(telegram_id, error)
     await state.reset_state()
