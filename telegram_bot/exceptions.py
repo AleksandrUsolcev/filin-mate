@@ -4,7 +4,7 @@ from settings import DIFF_TIME
 class TimeDifferenceError(Exception):
 
     def __init__(self):
-        self.message = ('Нельзя так часто добавлять показания.\n'
+        self.message = ('Нельзя так часто добавлять показатели.\n'
                         f'Подождите {DIFF_TIME} мин или если ошиблись '
                         'измените предыдущий добавленный показатель ')
 

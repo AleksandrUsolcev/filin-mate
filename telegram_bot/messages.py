@@ -8,3 +8,15 @@ STATS_MESSAGES = {
     'weight': 'Введите ваш вес',
     'height': 'Введите ваш рост'
 }
+
+START_MESSAGES = {
+    'sticker_id': 'CAACAgIAAxkBAAEF4fpjKZhoW6IJlYl1N2ASQBzyUD3u6AACVQADwZxgDK-VuhkqEsJ2KQQ',
+    'message': 'Добро пожаловать! \nДля получения помощи наберите /help'
+}
+
+HELP_MESSAGES = {
+    'message': ('Основные команды бота: '
+                '\n/pulse - пульс \n/pressure - давление '
+                '\n/sugar - сахар в крови \n/heat - температура тела '
+                '\n/saturation - сатурация \n/height - рост \n/weight - вес')
+}

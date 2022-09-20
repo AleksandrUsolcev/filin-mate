@@ -5,12 +5,29 @@ from aiogram.dispatcher import Dispatcher
 import api_calls as api
 from converters import stats_converter
 from exceptions import UserNotFoundError
-from messages import STATS_MESSAGES
+from messages import HELP_MESSAGES, START_MESSAGES, STATS_MESSAGES
 from settings import STATS_TYPES, TELEGRAM_TOKEN, logger
 from states import StatStates
 
 bot = Bot(token=str(TELEGRAM_TOKEN))
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    state = dp.current_state(user=message.from_user.id)
+    user = message.from_user.id
+    await state.reset_state()
+    await bot.send_sticker(user, START_MESSAGES.get('sticker_id'))
+    await bot.send_message(user, START_MESSAGES.get('message'))
+
+
+@dp.message_handler(commands=['help'])
+async def help(message: types.Message):
+    state = dp.current_state(user=message.from_user.id)
+    user = message.from_user.id
+    await state.reset_state()
+    await bot.send_message(user, HELP_MESSAGES.get('message'))
 
 
 @dp.message_handler(commands=list(STATS_TYPES.keys()))
