@@ -4,7 +4,7 @@ from settings import DIFF_TIME
 class TimeDifferenceError(Exception):
 
     def __init__(self):
-        self.message = ('Нельзя так часто добавлять показания.\n'
+        self.message = ('Нельзя так часто добавлять показатели.\n'
                         f'Подождите {DIFF_TIME} мин или если ошиблись '
                         'измените предыдущий добавленный показатель ')
 
@@ -36,7 +36,8 @@ class StatTypeNotFoundError(Exception):
 class IncorrectValueError(Exception):
 
     def __init__(self):
-        self.message = 'Некорректные данные, попробуйте снова'
+        self.message = ('Некорректные данные, попробуйте снова, выбрав {stat} '
+                        'или добавьте другие показатели')
 
     def __str__(self):
         error = 'Некорректные входные данные'
