@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
+from rest_framework import filters, status
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -54,10 +54,12 @@ class PatientViewSet(ModelViewSet):
 
 class StatViewSet(ModelViewSet):
     serializer_class = StatSerializer
-    queryset = Stat.objects.all().order_by('-created')
-    filter_backends = (DjangoFilterBackend,)
+    queryset = Stat.objects.all()
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = StatFilter
     http_method_names = ('post', 'get', 'delete', 'patch')
+    ordering_fields = ('created',)
+    ordering = ('-created',)
 
     def get_queryset(self):
         stat_type = self.request.query_params.get('type')

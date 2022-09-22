@@ -18,6 +18,7 @@ class StatTypeAdmin(admin.ModelAdmin):
         'slug',
         'min_value',
         'max_value',
+        'data_type'
     )
 
 

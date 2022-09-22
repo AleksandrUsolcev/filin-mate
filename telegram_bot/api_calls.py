@@ -21,6 +21,9 @@ def get_path(request_type: str, data: dict) -> str:
     pathes = {
         'stats': (f'stats/?patient={data.get("patient")}'
                   f'&type={data.get("type")}&limit=1'),
+        'stats_get': (f'stats/?patient={data.get("patient")}'
+                      f'&type={data.get("type")}'
+                      f'&limit={data.get("limit")}&ordering=created'),
         'patients': f'patients/?telegram={data.get("telegram")}'
     }
     path = ENDPOINT + pathes.get(request_type)
@@ -55,6 +58,26 @@ def stats_post(patient: int, stat_type: str, data: float) -> object:
         return response
     else:
         raise exc.TimeDifferenceError
+
+
+def stats_get(patient: int, stat_type: str, limit: int):
+    get_data = {
+        'patient': patient,
+        'type': stat_type,
+        'limit': limit
+    }
+    response = check_response('stats_get', get_data)
+    error_filter(response)
+    count = response['count']
+    dates = [parser.parse(response['results'][i]['created'])
+             for i in range(count)]
+    stats = [response['results'][i]['data'] for i in range(count)]
+    results = {
+        'dates': dates,
+        stat_type: stats,
+        'count': count
+    }
+    return results
 
 
 def patient_post(telegram_id: int) -> object:
