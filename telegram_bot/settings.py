@@ -32,7 +32,9 @@ STATS_TYPES = {
     'heat': 4,
     'sleep': 5,
     'weight': 6,
-    'height': 7
+    'height': 7,
+    'health': 8,
+    'mental': 9
 }
 
 LOGS_NAME = 'history.log'

@@ -62,7 +62,7 @@ async def stats_add(message: types.Message):
         await message.reply(STATS_MESSAGES[stat_type], reply=False)
 
 
-@ dp.message_handler(state=StatStates.all())
+@dp.message_handler(state=StatStates.all())
 async def state_stats_add(message: types.Message):
     state = dp.current_state(user=message.from_user.id)
     telegram_id = message.from_user.id

@@ -1,5 +1,5 @@
 import django_filters
-from stats.models import Location, Stat
+from stats.models import Location, Note, Stat
 
 
 class StatFilter(django_filters.FilterSet):
@@ -8,6 +8,14 @@ class StatFilter(django_filters.FilterSet):
 
     class Meta:
         model = Stat
+        fields = '__all__'
+
+
+class NoteFilter(django_filters.FilterSet):
+    patient = django_filters.NumberFilter(field_name='patient__telegram')
+
+    class Meta:
+        model = Note
         fields = '__all__'
 
 

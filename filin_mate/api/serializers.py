@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from stats.models import Location, Stat, StatType, Weather
+from stats.models import Location, Note, Stat, StatType, Weather
 from users.models import Patient, User
 
 
@@ -33,6 +33,17 @@ class StatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stat
         fields = ('id', 'patient', 'data', 'type', 'created')
+
+
+class NoteSerializer(serializers.ModelSerializer):
+    patient = serializers.SlugRelatedField(
+        slug_field='telegram',
+        queryset=Patient.objects.all()
+    )
+
+    class Meta:
+        model = Note
+        fields = ('id', 'patient', 'text')
 
 
 class LocationSerializer(serializers.ModelSerializer):
