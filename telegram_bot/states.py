@@ -12,3 +12,5 @@ class StatStates(Helper):
     SLEEP = ListItem()
     WEIGHT = ListItem()
     HEIGHT = ListItem()
+    HEALTH = ListItem()
+    MENTAL = ListItem()

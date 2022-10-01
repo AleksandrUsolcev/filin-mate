@@ -1,5 +1,3 @@
-import time
-import os
 from aiogram import Bot, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
@@ -8,7 +6,6 @@ import api_calls as api
 from converters import stats_converter
 from exceptions import UserNotFoundError
 from messages import HELP_MESSAGES, START_MESSAGES, STATS_MESSAGES
-from plots import save_img
 from settings import STATS_TYPES, TELEGRAM_TOKEN, logger
 from states import StatStates
 
@@ -90,11 +87,3 @@ async def state_stats_add(message: types.Message):
             error = error.message.format(stat=('/' + await state.get_state()))
             await bot.send_message(telegram_id, error)
     await state.reset_state()
-
-
-@dp.message_handler(commands=['plot'])
-async def send_plot(message: types.Message):
-    telegram_id = message.from_user.id
-    img = save_img(telegram_id, time.time())
-    await bot.send_photo(telegram_id, photo=open(img, 'rb'))
-    os.remove(img)

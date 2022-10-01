@@ -115,13 +115,16 @@ class Patient(models.Model):
         null=True
     )
     created = models.DateTimeField(
-        verbose_name='Дата добавления',
+        verbose_name='Дата регистрации',
         default=timezone.now
     )
 
     class Meta:
         verbose_name = 'Пациент'
         verbose_name_plural = 'Пациенты'
+
+    def __str__(self):
+        return str(f'Patient id {self.pk}')
 
 
 class Doctor(models.Model):

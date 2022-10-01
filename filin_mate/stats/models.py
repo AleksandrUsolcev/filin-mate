@@ -85,11 +85,30 @@ class Stat(StatsBaseModel):
         super().save(*args, **kwargs)
 
 
+class Note(StatsBaseModel):
+    """Заметки"""
+    patient = models.ForeignKey(
+        Patient,
+        related_name='notes',
+        verbose_name='Пациент',
+        on_delete=models.CASCADE
+    )
+    text = models.TextField(
+        verbose_name='Текст',
+        max_length=512
+    )
+
+    class Meta:
+        verbose_name = 'Заметки'
+        verbose_name_plural = 'Заметки'
+
+
 class Location(StatsBaseModel):
     """Местоположение"""
     patient = models.ForeignKey(
         Patient,
-        verbose_name='locations',
+        related_name='locations',
+        verbose_name='Пациент',
         on_delete=models.CASCADE
     )
     latitude = models.FloatField(
@@ -113,6 +132,7 @@ class Weather(StatsBaseModel):
     # location = models.ForeignKey(
     #     Location,
     #     verbose_name='Местоположение',
+    #     related_name='weathers',
     #     on_delete=models.CASCADE
     # )
     code = models.IntegerField(

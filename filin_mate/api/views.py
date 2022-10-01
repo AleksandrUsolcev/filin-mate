@@ -6,13 +6,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from stats.models import Location, Stat, StatType, Weather
+from stats.models import Location, Note, Stat, StatType, Weather
 from users.models import Patient, User
 
 from . import exceptions as exc
-from .filters import LocationFilter, StatFilter
-from .serializers import (LocationSerializer, PatientSerializer,
-                          StatSerializer, TokenSerializer, WeatherSerializer)
+from .filters import LocationFilter, NoteFilter, StatFilter
+from .serializers import (LocationSerializer, NoteSerializer,
+                          PatientSerializer, StatSerializer, TokenSerializer,
+                          WeatherSerializer)
 
 
 class TokenViewSet(ModelViewSet):
@@ -72,6 +73,22 @@ class StatViewSet(ModelViewSet):
             stat_type = StatType.objects.filter(slug=stat_type)
             if not stat_type.exists():
                 raise exc.WrongTypeParamException
+        return super().get_queryset()
+
+
+class NoteViewSet(ModelViewSet):
+    queryset = Note.objects.all().order_by('-created')
+    serializer_class = NoteSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_class = NoteFilter
+    search_fields = ('patient',)
+
+    def get_queryset(self):
+        patient = self.request.query_params.get('patient')
+        if patient:
+            patient = Patient.objects.filter(telegram=patient)
+            if not patient.exists():
+                raise exc.UserNotFoundException
         return super().get_queryset()
 
 

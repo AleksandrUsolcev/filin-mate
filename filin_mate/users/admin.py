@@ -23,6 +23,8 @@ class DoctorAdmin(admin.ModelAdmin):
 
 class PatientAdmin(admin.ModelAdmin):
     list_display = (
+        'pk',
+        'created',
         'user',
         'telegram',
         'age',
