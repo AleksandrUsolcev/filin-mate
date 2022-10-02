@@ -43,7 +43,7 @@ class NoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Note
-        fields = ('id', 'patient', 'text')
+        fields = ('id', 'patient', 'text', 'created')
 
 
 class LocationSerializer(serializers.ModelSerializer):

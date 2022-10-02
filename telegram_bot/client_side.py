@@ -59,7 +59,27 @@ async def stats_add(message: types.Message):
             await bot.send_message(telegram_id, error)
     else:
         await state.set_state(stat_type)
-        await message.reply(STATS_MESSAGES[stat_type], reply=False)
+        await message.reply(STATS_MESSAGES.get(stat_type), reply=False)
+
+
+@dp.message_handler(state=StatStates.NOTE)
+async def state_note_add(message: types.Message):
+    state = dp.current_state(user=message.from_user.id)
+    telegram_id = message.from_user.id
+    data = message.text
+    if data.strip():
+        try:
+            api.note_post(telegram_id, data)
+            await bot.send_message(telegram_id, 'Заметка добавлена')
+        except UserNotFoundError:
+            api.patient_post(telegram_id)
+            logger.info(f'Новый пользователь telegram_id({telegram_id})')
+            await state_note_add(message)
+        except Exception as error:
+            info = f' (telegram_id({telegram_id}) note({data}))'
+            logger.error(str(error) + info)
+            await bot.send_message(telegram_id, error.message)
+    await state.reset_state()
 
 
 @dp.message_handler(state=StatStates.all())
@@ -87,3 +107,26 @@ async def state_stats_add(message: types.Message):
             error = error.message.format(stat=('/' + await state.get_state()))
             await bot.send_message(telegram_id, error)
     await state.reset_state()
+
+
+@dp.message_handler(commands='note')
+async def note_add(message: types.Message):
+    data = message.get_args()
+    telegram_id = message.from_user.id
+    state = dp.current_state(user=message.from_user.id)
+    await state.reset_state()
+    if data.strip():
+        try:
+            api.note_post(telegram_id, data)
+            await bot.send_message(telegram_id, 'Заметка добавлена')
+        except UserNotFoundError:
+            api.patient_post(telegram_id)
+            logger.info(f'Новый пользователь telegram_id({telegram_id})')
+            await note_add(message)
+        except Exception as error:
+            info = f' (telegram_id({telegram_id}) note({data}))'
+            logger.error(str(error) + info)
+            await bot.send_message(telegram_id, error.message)
+    else:
+        await state.set_state('note')
+        await message.reply(STATS_MESSAGES.get('note'), reply=False)

@@ -1,7 +1,7 @@
 from settings import DIFF_TIME
 
 
-class TimeDifferenceError(Exception):
+class StatTimeDifferenceError(Exception):
 
     def __init__(self):
         self.message = ('Нельзя так часто добавлять показатели.\n'
@@ -9,7 +9,18 @@ class TimeDifferenceError(Exception):
                         'измените предыдущий добавленный показатель ')
 
     def __str__(self):
-        error = 'Попытка добавить показатель до истечения кулдауна'
+        error = 'Попытка добавить данные до истечения кулдауна'
+        return error
+
+
+class NoteTimeDifferenceError(Exception):
+
+    def __init__(self):
+        self.message = ('Нельзя так часто добавлять заметки.\n'
+                        f'Подождите {DIFF_TIME} мин')
+
+    def __str__(self):
+        error = 'Попытка добавить заметку до истечения кулдауна'
         return error
 
 

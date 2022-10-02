@@ -14,3 +14,4 @@ class StatStates(Helper):
     HEIGHT = ListItem()
     HEALTH = ListItem()
     MENTAL = ListItem()
+    NOTE = ListItem()
