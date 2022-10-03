@@ -9,6 +9,7 @@ v10 = DefaultRouter()
 
 v10.register('patients', views.PatientViewSet, basename='patients')
 v10.register('get-token', views.TokenViewSet, basename='get_token')
+v10.register('types', views.StatTypeViewSet, basename='types')
 v10.register('stats', views.StatViewSet, basename='stats')
 v10.register('notes', views.NoteViewSet, basename='notes')
 v10.register('locations', views.LocationViewSet, basename='locations')

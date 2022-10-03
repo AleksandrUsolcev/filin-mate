@@ -20,6 +20,14 @@ class PatientSerializer(serializers.ModelSerializer):
         fields = ('id', 'telegram', 'user', 'age', 'created')
 
 
+class StatTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StatType
+        fields = ('name', 'slug', 'description', 'min_value',
+                  'max_value', 'data_type', 'created')
+
+
 class StatSerializer(serializers.ModelSerializer):
     type = serializers.SlugRelatedField(
         slug_field='slug',

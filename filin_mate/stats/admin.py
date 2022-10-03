@@ -25,7 +25,8 @@ class StatTypeAdmin(admin.ModelAdmin):
 class NoteAdmin(admin.ModelAdmin):
     list_display = (
         'created',
-        'patient'
+        'patient',
+        'text'
     )
 
 

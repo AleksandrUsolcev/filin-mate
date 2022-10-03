@@ -44,6 +44,22 @@ def check_response(request_type: str, data: dict) -> dict:
     return error_filter(response.json())
 
 
+def stats_type_post(
+        slug: str, name: str, min_value: int, max_value: int, data_type: str,
+        description: str = '') -> object:
+    post_data = {
+        'slug': slug,
+        'name': name,
+        'min_value': min_value,
+        'max_value': max_value,
+        'data_type': data_type,
+        'description': description
+    }
+    path = 'types/'
+    response = requests.post(ENDPOINT + path, post_data, headers=HEADERS)
+    return response
+
+
 def stats_post(patient: int, stat_type: str, data: float) -> object:
     post_data = {
         'patient': patient,

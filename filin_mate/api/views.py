@@ -12,7 +12,8 @@ from users.models import Patient, User
 from . import exceptions as exc
 from .filters import LocationFilter, NoteFilter, StatFilter
 from .serializers import (LocationSerializer, NoteSerializer,
-                          PatientSerializer, StatSerializer, TokenSerializer,
+                          PatientSerializer, StatSerializer,
+                          StatTypeSerializer, TokenSerializer,
                           WeatherSerializer)
 
 
@@ -51,6 +52,13 @@ class PatientViewSet(ModelViewSet):
             if not telegram.exists():
                 raise exc.UserNotFoundException
         return super().get_queryset()
+
+
+class StatTypeViewSet(ModelViewSet):
+    queryset = StatType.objects.all()
+    serializer_class = StatTypeSerializer
+    filter_backends = (SearchFilter,)
+    search_fields = ('slug',)
 
 
 class StatViewSet(ModelViewSet):
