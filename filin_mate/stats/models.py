@@ -74,7 +74,7 @@ class Stat(StatsBaseModel):
         verbose_name_plural = 'Статистика'
 
     def __str__(self):
-        return f'{self.data}'
+        return f'{self.type}: {self.data}'
 
     def save(self, *args, **kwargs):
         stat = self.data
@@ -101,6 +101,9 @@ class Note(StatsBaseModel):
     class Meta:
         verbose_name = 'Заметки'
         verbose_name_plural = 'Заметки'
+
+    def __str__(self):
+        return f'{self.text[:24]}'
 
 
 class Location(StatsBaseModel):

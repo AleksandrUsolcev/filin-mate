@@ -21,6 +21,7 @@ def get_path(request_type: str, data: dict) -> str:
     pathes = {
         'stats': (f'stats/?patient={data.get("patient")}'
                   f'&type={data.get("type")}&limit=1'),
+        'notes': f'notes/?patient={data.get("patient")}&limit=1',
         'stats_get': (f'stats/?patient={data.get("patient")}'
                       f'&type={data.get("type")}'
                       f'&limit={data.get("limit")}&ordering=created'),
@@ -43,6 +44,22 @@ def check_response(request_type: str, data: dict) -> dict:
     return error_filter(response.json())
 
 
+def stats_type_post(
+        slug: str, name: str, min_value: int, max_value: int, data_type: str,
+        description: str = '') -> object:
+    post_data = {
+        'slug': slug,
+        'name': name,
+        'min_value': min_value,
+        'max_value': max_value,
+        'data_type': data_type,
+        'description': description
+    }
+    path = 'types/'
+    response = requests.post(ENDPOINT + path, post_data, headers=HEADERS)
+    return response
+
+
 def stats_post(patient: int, stat_type: str, data: float) -> object:
     post_data = {
         'patient': patient,
@@ -57,10 +74,10 @@ def stats_post(patient: int, stat_type: str, data: float) -> object:
         error_filter(response.json())
         return response
     else:
-        raise exc.TimeDifferenceError
+        raise exc.StatTimeDifferenceError
 
 
-def stats_get(patient: int, stat_type: str, limit: int):
+def stats_get(patient: int, stat_type: str, limit: int) -> object:
     get_data = {
         'patient': patient,
         'type': stat_type,
@@ -78,6 +95,22 @@ def stats_get(patient: int, stat_type: str, limit: int):
         'count': count
     }
     return results
+
+
+def note_post(telegram_id: int, text: str) -> object:
+    post_data = {
+        'patient': telegram_id,
+        'text': text
+    }
+    response = check_response('notes', post_data)
+    difference = time_difference(response)
+    if difference >= DIFF_TIME:
+        path = 'notes/'
+        response = requests.post(ENDPOINT + path, post_data, headers=HEADERS)
+        error_filter(response.json())
+        return response
+    else:
+        raise exc.NoteTimeDifferenceError
 
 
 def patient_post(telegram_id: int) -> object:

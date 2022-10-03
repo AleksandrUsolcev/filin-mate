@@ -18,6 +18,8 @@ HEADERS = {'Authorization': 'Bearer ' + FILIN_TOKEN}
 
 DIFF_TIME = 2
 
+WEATHER_PARSE = False
+
 WEATHER_PARSE_INTERVAL = 30
 
 LATITUDE = 55.777110
@@ -25,17 +27,20 @@ LATITUDE = 55.777110
 LONGITUDE = 37.508503
 
 STATS_TYPES = {
-    'pulse': 0,
-    'saturation': 1,
-    'pressure': 2,
-    'sugar': 3,
-    'heat': 4,
-    'sleep': 5,
-    'weight': 6,
-    'height': 7,
-    'health': 8,
-    'mental': 9
+    'pulse': ['Пульс', 20, 290, 'int'],
+    'saturation': ['Сатурация', 20, 100, 'int'],
+    'lower': ['Нижнее давление', 20, 320, 'int'],
+    'upper': ['Верхнее давление', 20, 320, 'int'],
+    'sugar': ['Сахар в крови', 0, 70, 'float'],
+    'heat': ['Температура тела', 33, 43, 'float'],
+    'sleep': ['Время сна', 0, 24, 'float'],
+    'weight': ['Вес', 1, 450, 'float'],
+    'height': ['Рост', 30, 260, 'float'],
+    'health': ['Физическое состояние', 1, 10, 'int'],
+    'mental': ['Психологическое состояние', 1, 10, 'int']
 }
+
+STATS_TYPES_FILL_ON_START = True
 
 LOGS_NAME = 'history.log'
 
