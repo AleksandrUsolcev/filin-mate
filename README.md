@@ -29,12 +29,12 @@ Web:
 Установить и активировать виртуальное окружение
 
 ```
-$ python3 -m venv venv
+python3 -m venv venv
 
 # Активация окружения для Mac или Linux:
-$ source venv/bin/activate 
+source venv/bin/activate 
 # и для Windows:
-$ source venv/Scripts/activate 
+source venv/Scripts/activate 
 ``` 
 
 Установить зависимости из файла **requirements.txt**
