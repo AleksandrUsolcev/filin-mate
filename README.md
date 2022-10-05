@@ -23,6 +23,16 @@ Web:
 - рабочая страница врача со списком подопечных пациентов и их показателей;
 - инструментарий для удобного анализа показателей здоровья.
 
+## Технологии
+
+- Python 3.9+
+- [django](https://github.com/django/django) 4.1
+- [django-rest-framework](https://github.com/encode/django-rest-framework)
+  3.13
+- [Simple JWT](https://github.com/jazzband/djangorestframework-simplejwt) 5.2.0
+- [AIOGram](https://github.com/aiogram/aiogram) 2.22
+- [Dateutil](https://github.com/dateutil/dateutil) 2.8
+
 ## Запуск проекта в dev-режиме
 
 Клонировать репозиторий
@@ -93,3 +103,5 @@ python3 main.py
 **STATS_TYPES** - словарь с типами показателей здоровья и их настройками по умолчанию. При добавлении своих типов показателей следует его обновить, т.к. с его ключей берутся команды для бота
 
 **STATS_TYPES_FILL_ON_START** - вкл/откл автодобавление типов данных из **STATS_TYPES** при запуске бота
+
+**LOGS_NAME** - имя файла логов
