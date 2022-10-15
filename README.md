@@ -51,6 +51,7 @@ cd filin-mate
 
 ```bash
 cd docker/
+cp example.env .env
 nano .env
 ``` 
 
