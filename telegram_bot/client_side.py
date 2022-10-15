@@ -31,7 +31,7 @@ async def help(message: types.Message):
                            parse_mode='html')
 
 
-@dp.message_handler(commands=list(STATS_TYPES.keys()) and 'pressure')
+@dp.message_handler(commands=list(STATS_TYPES.keys()) + ['pressure'])
 async def stats_add(message: types.Message):
     stat_type = message.get_command().replace('/', '')
     data = message.get_args()

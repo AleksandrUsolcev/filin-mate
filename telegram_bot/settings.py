@@ -12,15 +12,15 @@ FILIN_TOKEN = os.getenv('FILIN_TOKEN')
 
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 
-ENDPOINT = os.getenv('ENDPOINT', default='http://127.0.0.1:8000/api/1.0/')
+ENDPOINT = os.getenv('ENDPOINT', default='http://web:8000/api/1.0/')
 
 HEADERS = {'Authorization': 'Bearer ' + FILIN_TOKEN}
 
 DIFF_TIME = 2
 
-WEATHER_PARSE = False
+WEATHER_PARSE = os.getenv('WEATHER_PARSE', default=False)
 
-WEATHER_PARSE_INTERVAL = 30
+WEATHER_PARSE_INTERVAL = os.getenv('WEATHER_PARSE_INTERVAL', default=30)
 
 LATITUDE = 55.777110
 
@@ -40,13 +40,11 @@ STATS_TYPES = {
     'mental': ['Психологическое состояние', 1, 10, 'int']
 }
 
-STATS_TYPES_FILL_ON_START = True
-
 LOGS_NAME = 'history.log'
 
 LOGS_MAX_BYTES = 10000000
 
-LOGS_COUNT = 5
+LOGS_COUNT = 1
 
 logger = logging.getLogger(LOGS_NAME)
 logger.setLevel(logging.INFO)

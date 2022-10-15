@@ -35,6 +35,8 @@ class TokenViewSet(ModelViewSet):
         if not user.is_superuser:
             raise exc.TokenPermissionException
         token = AccessToken.for_user(user)
+        user.token = token
+        user.save()
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
 
 
