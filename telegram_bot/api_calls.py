@@ -1,4 +1,5 @@
 from datetime import datetime
+from pytz import timezone
 
 import requests
 from dateutil import parser
@@ -13,7 +14,9 @@ def time_difference(response_json: dict) -> float:
         return DIFF_TIME
     last_updated = response_json['results'][0]['created']
     last_updated = parser.parse(last_updated).replace(tzinfo=None)
-    difference = (datetime.now() - last_updated).total_seconds() / 60
+    tz = timezone('Europe/Moscow')
+    time_now = datetime.now(tz).replace(tzinfo=None)
+    difference = (time_now - last_updated).total_seconds() / 60
     return difference
 
 

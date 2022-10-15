@@ -29,6 +29,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=10,
         default=USER
     )
+    token = models.TextField(
+        verbose_name='Токен',
+        blank=True,
+    )
     first_name = models.CharField(
         verbose_name='Имя',
         blank=True,

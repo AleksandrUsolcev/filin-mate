@@ -1,7 +1,7 @@
 # filin-mate
-![Python version](https://img.shields.io/badge/python-3.10-yellow) ![Django version](https://img.shields.io/badge/django-4.1-red) ![Aiogram version](https://img.shields.io/badge/aiogram-2.22-blue)
+![Python version](https://img.shields.io/badge/python-3.9-yellow) ![Django version](https://img.shields.io/badge/django-4.1-red) ![Aiogram version](https://img.shields.io/badge/aiogram-2.22-blue)
 
-Дневник основных показателей здоровья реализованный посредством связки асинхронного телеграм-бота и rest-api.
+Дневник основных показателей здоровья реализованный посредством асинхронного телеграм-бота и rest-api.
 
 В текущих реалиях при наблюдении у врачей многим пациентам на дом часто назначают ведение дневника артериального давления и пульса. Заполнять такой дневник как правило приходится вручную, что впоследствии затрудняет анализ показателей лечащим врачом, попутно отнимая уйму ценного рабочего времени. Помимо затраченного времени отсутствует возможность оперативно реагировать на показания, в случае отклонения их от нормы. Решить эти проблемы и не только призван данный проект.
 
@@ -23,18 +23,29 @@ Web:
 - рабочая страница врача со списком подопечных пациентов и их показателей;
 - инструментарий для удобного анализа показателей здоровья.
 
+## Технологии
+
+- Python 3.9+
+- [django](https://github.com/django/django) 4.1
+- [django-rest-framework](https://github.com/encode/django-rest-framework)
+  3.13
+- [Simple JWT](https://github.com/jazzband/djangorestframework-simplejwt) 5.2.0
+- [AIOGram](https://github.com/aiogram/aiogram) 2.22
+- [Dateutil](https://github.com/dateutil/dateutil) 2.8
+
 ## Запуск проекта в dev-режиме
 
 Клонировать репозиторий
+
 Установить и активировать виртуальное окружение
 
 ```
-$ python3 -m venv venv
+python3 -m venv venv
 
 # Активация окружения для Mac или Linux:
-$ source venv/bin/activate 
+source venv/bin/activate 
 # и для Windows:
-$ source venv/Scripts/activate 
+source venv/Scripts/activate 
 ``` 
 
 Установить зависимости из файла **requirements.txt**
@@ -80,7 +91,7 @@ python3 main.py
 
 ## Настройки бота
 
-В директории **telegram_bot** лежат настройки нашего бота - **settings.py**
+Файл настроек - **[settings.py](/telegram_bot/settings.py)**
 
 **DIFF_TIME** - интервал (мин.) добавления новых показателей здоровья
 
@@ -88,8 +99,14 @@ python3 main.py
 
 **WEATHER_PARSE_INTERVAL** - интервал парсинга погоды (мин.)
 
-**LATITUDE** и **LONGITUDE** - широта и долгота, с координатами для парсинга погоды. В дальнейших обновлениях отпадут из за ненадобности и при парсинге будет идти обращение к указанным паиентами координатам
+**LATITUDE** и **LONGITUDE** - широта и долгота, с координатами для парсинга погоды. В дальнейших обновлениях отпадут из за ненадобности и при парсинге будет идти обращение к указанным пациентами координатам
 
 **STATS_TYPES** - словарь с типами показателей здоровья и их настройками по умолчанию. При добавлении своих типов показателей следует его обновить, т.к. с его ключей берутся команды для бота
 
-**STATS_TYPES_FILL_ON_START** - вкл/откл автодобавление типов данных при запуске бота
+**STATS_TYPES_FILL_ON_START** - вкл/откл автодобавление типов данных из **STATS_TYPES** при запуске бота
+
+**LOGS_NAME** - имя файла логов
+
+## Автор
+
+[Александр Усольцев](https://github.com/AleksandrUsolcev)
