@@ -33,61 +33,55 @@ Web:
 - [AIOGram](https://github.com/aiogram/aiogram) 2.22
 - [Dateutil](https://github.com/dateutil/dateutil) 2.8
 
-## Запуск проекта в dev-режиме
+## Запуск проекта
 
-Клонировать репозиторий
+Клонировать репозиторий и перейти в корень проекта
 
-Установить и активировать виртуальное окружение
-
-```
-python3 -m venv venv
-
-# Активация окружения для Mac или Linux:
-source venv/bin/activate 
-# и для Windows:
-source venv/Scripts/activate 
+```bash
+git clone https://github.com/AleksandrUsolcev/filin-mate.git
+cd filin-mate
 ``` 
 
-Установить зависимости из файла **requirements.txt**
+Перейти в /docker, создать файл переменного окружения и заполнить по [образцу](/docker/example.env) 
+- **POSTGRES_PASSWORD** - не забыть указать пароль DB
+- **FILIN_TOKEN** - токен api, пока не трогаем, его мы получим на следующих шагах
+- **TELEGRAM_TOKEN** - получаем при [создании](https://telegram.me/BotFather) бота в телеграме
+- **WEATHER_TOKEN** - по умолчанию в настройках отключен парсинг погоды и если в нем нет никакой необходимости WEATHER_TOKEN можно не указывать. Получить токен погоды можно зарегистрировавшись на [OpenWeatherMap](https://openweathermap.org/). Обязательно следует ознакомиться с информацией по лимитам запросов.
+- **WEATHER_PARSE** - добавить (значение указываем любое) если у нас есть токен с [OpenWeatherMap](https://openweathermap.org/)
 
-```
-pip install -r requirements.txt
+```bash
+cd docker/
+nano .env
 ``` 
 
-Выполнить миграции, создать супер-пользователя и запустить проект
+Развернуть docker контейнеры (пока без бота)
 
 ```
-python3 manage.py migrate
-python3 manage.py createsuperuser
-python3 manage.py runserver
+docker-compose up -d --build db web nginx
 ``` 
 
-Для получения токена выполнить post запрос с данными супер-пользователя по адресу **.../api/1.0/get-token/**
+Создать суперпользователя
+
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+Получить токен, выполнив post запрос с данными суперпользователя по адресу **.../api/1.0/get-token/**
 
 ```
 {
-  "email": "email-адрес супер-пользователя",
+  "email": "email-адрес суперпользователя",
   "password": "пароль"
 }
 ``` 
 
-По умолчанию в настройках отключен парсинг погоды и если в нем нет никакой необходимости WEATHER_TOKEN можно не указывать. Получить токен погоды можно зарегистрировавшись на [OpenWeatherMap](https://openweathermap.org/). Обязательно следует ознакомиться с информацией по лимитам запросов.
+В созданном ранее .env файле копируем в значение **FILIN_TOKEN** полученный токен суперпользователя
 
-В директории **telegram_bot** создать **.env** файл переменного окружения
-
-```
-FILIN_TOKEN=<полученный нами токен супер-пользователя>
-TELEGRAM_TOKEN=<токен телеграм-бота>
-WEATHER_TOKEN=<токен OpenWeatherMap>
-``` 
-
-Перейти в **telegram_bot** и запустить бот (наше api уже должно быть запущено)
+Пересобираем и запускаем контейнеры
 
 ```
-python3 main.py
+docker-compose up -d --build
 ``` 
-
-С дальнейшими обновлениями должны причалить docker образы
 
 ## Настройки бота
 
