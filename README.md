@@ -35,14 +35,15 @@ Web:
 
 ## Запуск проекта
 
-Клонировать репозиторий и перейти в корень проекта
+Клонировать репозиторий и перейти в filin-mate/docker/
 
 ```bash
 git clone https://github.com/AleksandrUsolcev/filin-mate.git
-cd filin-mate
+cd filin-mate/docker/
 ``` 
 
-Перейти в /docker, создать файл переменного окружения и заполнить по [образцу](/docker/example.env) 
+Клонировать [образец](/docker/example.env) файла переменного окружения и заполнить
+
 - **POSTGRES_PASSWORD** - не забыть указать пароль DB
 - **FILIN_TOKEN** - токен api, пока не трогаем, его мы получим на следующих шагах
 - **TELEGRAM_TOKEN** - получаем при [создании](https://telegram.me/BotFather) бота в телеграме
@@ -50,7 +51,6 @@ cd filin-mate
 - **WEATHER_PARSE** - добавить (значение указываем любое) если у нас есть токен с [OpenWeatherMap](https://openweathermap.org/)
 
 ```bash
-cd docker/
 cp example.env .env
 nano .env
 ``` 
@@ -67,14 +67,13 @@ docker-compose up -d --build db web nginx
 docker-compose exec web python manage.py createsuperuser
 ```
 
-Получить токен, выполнив post запрос с данными суперпользователя по адресу **.../api/1.0/get-token/**
+Получить токен*, указав данные суперпользователя
 
-```
-{
-  "email": "email-адрес суперпользователя",
-  "password": "пароль"
-}
+```bash
+docker-compose exec web python manage.py token <email> <password>
 ``` 
+
+**Данная команда так же обновляет уже созданный токен. Посмотреть актуальный токен можно перейдя в админке на УЗ суперпользователя .../project-admin/users/user/*
 
 В созданном ранее .env файле копируем в значение **FILIN_TOKEN** полученный токен суперпользователя
 
@@ -97,6 +96,8 @@ docker-compose up -d --build
 **LATITUDE** и **LONGITUDE** - широта и долгота, с координатами для парсинга погоды. В дальнейших обновлениях отпадут из за ненадобности и при парсинге будет идти обращение к указанным пациентами координатам
 
 **STATS_TYPES** - словарь с типами показателей здоровья и их настройками по умолчанию. При добавлении своих типов показателей следует его обновить, т.к. с его ключей берутся команды для бота
+
+**STATS_TYPES_FILL_ON_START** - вкл/откл автодобавление типов данных из **STATS_TYPES** при запуске бота
 
 **LOGS_NAME** - имя файла логов
 
