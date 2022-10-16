@@ -58,7 +58,7 @@ nano .env
 Развернуть docker контейнеры (пока без бота)
 
 ```
-docker-compose up -d --build db web nginx
+docker-compose up -d db web nginx
 ``` 
 
 Создать суперпользователя
