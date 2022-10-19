@@ -44,21 +44,21 @@ cd filin-mate/docker/
 
 Клонировать [образец](/docker/example.env) файла переменного окружения и заполнить
 
-- **POSTGRES_PASSWORD** - не забыть указать пароль DB
-- **FILIN_TOKEN** - токен api, пока не трогаем, его мы получим на следующих шагах
-- **TELEGRAM_TOKEN** - получаем при [создании](https://telegram.me/BotFather) бота в телеграме
-- **WEATHER_TOKEN** - по умолчанию в настройках отключен парсинг погоды и если в нем нет никакой необходимости WEATHER_TOKEN можно не указывать. Получить токен погоды можно зарегистрировавшись на [OpenWeatherMap](https://openweathermap.org/). Обязательно следует ознакомиться с информацией по лимитам запросов.
-- **WEATHER_PARSE** - добавить (значение указываем любое) если у нас есть токен с [OpenWeatherMap](https://openweathermap.org/)
-
 ```bash
 cp example.env .env
 nano .env
 ``` 
 
+- **POSTGRES_PASSWORD** - придумать пароль DB
+- **FILIN_TOKEN** - токен api, пока не трогаем, его мы получим на следующих шагах
+- **TELEGRAM_TOKEN** - получаем при [создании](https://telegram.me/BotFather) бота в телеграме
+- **WEATHER_TOKEN** - по умолчанию в настройках отключен парсинг погоды и если в нем нет никакой необходимости WEATHER_TOKEN можно не указывать. Получить токен погоды можно зарегистрировавшись на [OpenWeatherMap](https://openweathermap.org/). Обязательно следует ознакомиться с информацией по лимитам запросов.
+- **WEATHER_PARSE** - добавить (значение указываем любое) если у нас есть токен с [OpenWeatherMap](https://openweathermap.org/)
+
 Развернуть docker контейнеры (пока без бота)
 
 ```
-docker-compose up -d --build db web nginx
+docker-compose up -d db web nginx
 ``` 
 
 Создать суперпользователя
