@@ -1,6 +1,6 @@
-#!/bin/bash -x
+#!/bin/sh
 
 apt-get update
 apt-get install nano
-python main.py || exit 1
+python main.py
 exec "$@"
