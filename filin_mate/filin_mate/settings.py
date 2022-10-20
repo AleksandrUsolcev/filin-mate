@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "users",
     "stats",
     "api",
+    "web",
 ]
 
 MIDDLEWARE = [

@@ -73,7 +73,7 @@ docker-compose exec web python manage.py createsuperuser
 docker-compose exec web python manage.py token <email> <password>
 ``` 
 
-**Данная команда так же обновляет уже созданный токен. Посмотреть актуальный токен можно перейдя в админке на УЗ суперпользователя .../project-admin/users/user/*
+**Данная команда так же обновляет уже созданный токен. Посмотреть актуальный токен можно перейдя в админке на УЗ суперпользователя `http://localhost/project-admin/users/user/`*
 
 В созданном ранее .env файле копируем в значение **FILIN_TOKEN** полученный токен суперпользователя
 
