@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}
+  Список пациентов
+{% endblock %}
+{% block content %}
+{% for patient in patients  %}
+  {{ patient.telegram }}
+{% endfor %}
+{% endblock %}

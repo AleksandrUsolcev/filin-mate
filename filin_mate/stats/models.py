@@ -1,3 +1,4 @@
+from email.policy import default
 from api import exceptions as exc
 from core.models import StatsBaseModel
 from django.db import models
@@ -41,6 +42,11 @@ class StatType(StatsBaseModel):
     )
     max_value = models.FloatField(
         verbose_name='Максимальное значение'
+    )
+    important = models.BooleanField(
+        verbose_name='Важное значение',
+        default=False,
+        blank=True
     )
 
     class Meta:

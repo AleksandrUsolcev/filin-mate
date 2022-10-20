@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}
+  Профиль пациента
+{% endblock %}
+{% block content %}
+<h4>telegram id: {{ patient.telegram }}</h4>
+<p>Зарегистрирован {{ patient.created }}</p>
+{% if patient.age %}
+  <p>Возраст {{ patient.age }}</p>
+{% endif %}
+{% if stats %}
+  {% for stat in stats %}
+    <p>
+      {{ stat.created }} - {{ stat.type.name }} - <span class="fw-bold">{{ stat.data }}</span>
+    </p>
+  {% endfor %}
+{% endif %}
+{% endblock %}
