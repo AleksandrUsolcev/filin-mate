@@ -6,7 +6,7 @@
 <h2 class="fw-bold my-4 mb-2">Карта пациента № {{ patient.id }}</h2>
 <p>Зарегистрирован {{ patient.created }}</p>
 {% if patient.date_of_birth %}
-  <p class="pt-3">Возраст: {{ patient.age }} - Дата рождения {{ patient.date_of_birth }}</p>
+  <p class="pt-3"><span class="pe-3">Возраст: {{ patient.age }}</span> Дата рождения {{ patient.date_of_birth }}</p>
 {% endif %}
 {% if importants %}
   <p>
@@ -24,42 +24,58 @@
   {% endfor %}
   </p>
 {% endif %}
-{% if stats %}
+{% if stats or filtered %}
   <div class="mt-5">
     <h4 class="mb-4">Последние добавленные показатели</h4>
     <form action="{% url 'web:patient_detail_filter' patient.id %}" method="get" name="filter">
       <div class="form-check form-switch pb-3">
-        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+        <input class="form-check-input" type="checkbox" name="notes" id="flexSwitchCheckChecked" {% if notes_status or not filtered %}checked{% endif %}>
         <label class="me-3">Заметки пациента</label>
       </div>
       <div class="form-check form-switch pb-3">
-        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled>
         <label class="me-3">Погодные данные</label>
       </div>
       {% for stat in types %}
-        <input type="checkbox" class="form-check-input" name="type" value="{{ stat.type.id }}" {% if stat.type.id in checked or checked_all %}checked{% endif %}>
-        <label class="me-3">{{ stat.type.name }}</label>
+        <div style="white-space:nowrap" class="d-inline me-3">
+          <input type="checkbox" class="form-check-input" name="type" value="{{ stat.type.id }}" {% if stat.type.id in checked or not filtered %}checked{% endif %}>
+          <label>{{ stat.type.name }}</label>
+        </div>
       {% endfor %}
       <br>
       <button class="btn btn-primary my-4 me-4" type="submit">Фильтр</button>
+      {% if filtered %}
+        <a href="{% url 'web:patient_detail' patient.id %}">Сброс параметров фильтра</a> 
+      {% endif %}
       <!-- <button class="btn btn-primary my-4 me-4">Выгузить таблицу</button>
       <button class="btn btn-primary my-4 me-4">Построить график</button> -->
     </form>
-    {% for stat in stats %}
-      {% if stat.text %}
-        <p>{{ stat.created }} - заметка - <span class="fw-bold">{{ stat.text }}</span></p>
-      {% else %}
-        <p>{{ stat.created }} - {{ stat.type.name }} - <span class="fw-bold">
-          {% if stat.type.data_type == 'float' %}
-            {{ stat.data|floatformat }}
-          {% elif stat.type.data_type == 'int' %}
-            {{ stat.data|floatformat:"0" }}
+    <table class="table">
+      <tbody>
+        {% for stat in stats %}
+          {% if stat.text %}
+            <tr class="table-info">
+              <td style="white-space:nowrap">{{ stat.created }}</td>
+              <td colspan="2">{{ stat.text }}</td>
+            </tr>
           {% else %}
-            {{ stat.data }}
+            <tr>
+              <td style=white-space:nowrap">{{ stat.created }}</td>
+              <td>{{ stat.type.name }}</td>
+              <td><span class="fw-bold">
+                {% if stat.type.data_type == 'float' %}
+                  {{ stat.data|floatformat }}
+                {% elif stat.type.data_type == 'int' %}
+                  {{ stat.data|floatformat:"0" }}
+                {% else %}
+                  {{ stat.data }}
+                {% endif %}
+              </span></td>
+            </tr>
           {% endif %}
-        </span></p>
-      {% endif %}
-    {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% endif %}
 {% endblock %}

@@ -22,15 +22,15 @@ class PatientDetailView(DetailView):
             'type').filter(patient_id=patient_id)
         importants = self.stats.filter(type__important=True).distinct('type')
         types = self.stats.distinct('type')
-        notes = Note.objects.filter(patient_id=patient_id)
+        self.notes = Note.objects.filter(patient_id=patient_id)
         stats = sorted(
-            chain(self.stats, notes),
+            chain(self.stats, self.notes),
             key=lambda data: data.created, reverse=True)
         extra_context = {
             'types': types,
             'importants': importants,
             'stats': stats,
-            'checked_all': True
+            'filtered': False
         }
         context.update(extra_context)
         return context
@@ -39,17 +39,20 @@ class PatientDetailView(DetailView):
 class PatientFilterView(PatientDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        patient_id = self.kwargs['pk']
+        notes_status = True
+        if not self.request.GET.getlist('notes'):
+            self.notes = []
+            notes_status = False
         stats = self.stats.filter(type__in=self.request.GET.getlist('type'))
-        notes = Note.objects.filter(patient_id=patient_id)
         checked = stats.values_list('type', flat=True).distinct()
         stats = sorted(
-            chain(stats, notes),
+            chain(stats, self.notes),
             key=lambda data: data.created, reverse=True)
         extra_context = {
             'stats': stats,
             'checked': checked,
-            'checked_all': False
+            'filtered': True,
+            'notes_status': notes_status
         }
         context.update(extra_context)
         return context
