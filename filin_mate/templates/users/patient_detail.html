@@ -28,23 +28,26 @@
   <div class="mt-5">
     <h4 class="mb-4">Последние добавленные показатели</h4>
     <form action="{% url 'web:patient_detail_filter' patient.id %}" method="get" name="filter">
-      <div class="form-check form-switch pb-3">
-        <input class="form-check-input" type="checkbox" name="notes" id="flexSwitchCheckChecked" {% if notes_status or not filtered %}checked{% endif %}>
-        <label class="me-3">Заметки пациента</label>
-      </div>
-      <div class="form-check form-switch pb-3">
+      {% if patient.notes.count %}
+        <div class="form-check form-switch form-check-inline pb-3">
+          <input class="form-check-input" type="checkbox" name="notes" id="flexSwitchCheckChecked" {% if notes_status or not filtered %}checked{% endif %}>
+          <label class="me-3">Заметки пациента</label>
+        </div>
+      {% endif %}
+      <div class="form-check form-switch form-check-inline pb-3">
         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled>
         <label class="me-3">Погодные данные</label>
       </div>
+      <br>
       {% for stat in types %}
         <div style="white-space:nowrap" class="d-inline me-3">
-          <input type="checkbox" class="form-check-input" name="type" value="{{ stat.type.id }}" {% if stat.type.id in checked or not filtered %}checked{% endif %}>
+          <input type="checkbox" class="form-check-input" name="t" value="{{ stat.type.id }}" {% if stat.type.id in checked or not filtered %}checked{% endif %}>
           <label>{{ stat.type.name }}</label>
         </div>
       {% endfor %}
       <br>
       <button class="btn btn-primary my-4 me-4" type="submit">Фильтр</button>
-      {% if filtered %}
+      {% if filtered and checked.count != types.count %}
         <a href="{% url 'web:patient_detail' patient.id %}">Сброс параметров фильтра</a> 
       {% endif %}
       <!-- <button class="btn btn-primary my-4 me-4">Выгузить таблицу</button>

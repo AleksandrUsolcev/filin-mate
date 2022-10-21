@@ -43,7 +43,7 @@ class PatientFilterView(PatientDetailView):
         if not self.request.GET.getlist('notes'):
             self.notes = []
             notes_status = False
-        stats = self.stats.filter(type__in=self.request.GET.getlist('type'))
+        stats = self.stats.filter(type__in=self.request.GET.getlist('t'))
         checked = stats.values_list('type', flat=True).distinct()
         stats = sorted(
             chain(stats, self.notes),
