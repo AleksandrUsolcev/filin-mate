@@ -17,6 +17,11 @@ urlpatterns = [
         name='patient_list'
     ),
     path(
+        'patients/<int:pk>/stats',
+        views.PatientFilterView.as_view(),
+        name='patient_detail_filter'
+    ),
+    path(
         'patients/<int:pk>/',
         views.PatientDetailView.as_view(),
         name='patient_detail'

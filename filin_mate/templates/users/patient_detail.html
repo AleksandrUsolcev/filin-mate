@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}
-  Профиль пациента
+  Карта пациента № {{ patient.id }}
 {% endblock %}
 {% block content %}
-<h4>telegram id: {{ patient.telegram }}</h4>
+<h2 class="fw-bold my-4 mb-2">Карта пациента № {{ patient.id }}</h2>
 <p>Зарегистрирован {{ patient.created }}</p>
 {% if patient.date_of_birth %}
-  <p>Возраст: {{ patient.age }} - Дата рождения {{ patient.date_of_birth }}</p>
+  <p class="pt-3">Возраст: {{ patient.age }} - Дата рождения {{ patient.date_of_birth }}</p>
 {% endif %}
 {% if importants %}
   <p>
@@ -25,20 +25,41 @@
   </p>
 {% endif %}
 {% if stats %}
-  {% for stat in stats %}
-    {% if stat.text %}
-      <p>{{ stat.created }} - заметка - <span class="fw-bold">{{ stat.text }}</span></p>
-    {% else %}
-      <p>{{ stat.created }} - {{ stat.type.name }} - <span class="fw-bold">
-        {% if stat.type.data_type == 'float' %}
-          {{ stat.data|floatformat }}
-        {% elif stat.type.data_type == 'int' %}
-          {{ stat.data|floatformat:"0" }}
-        {% else %}
-          {{ stat.data }}
-        {% endif %}
-      </span></p>
-    {% endif %}
-  {% endfor %}
+  <div class="mt-5">
+    <h4 class="mb-4">Последние добавленные показатели</h4>
+    <form action="{% url 'web:patient_detail_filter' patient.id %}" method="get" name="filter">
+      <div class="form-check form-switch pb-3">
+        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+        <label class="me-3">Заметки пациента</label>
+      </div>
+      <div class="form-check form-switch pb-3">
+        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+        <label class="me-3">Погодные данные</label>
+      </div>
+      {% for stat in types %}
+        <input type="checkbox" class="form-check-input" name="type" value="{{ stat.type.id }}" {% if stat.type.id in checked or checked_all %}checked{% endif %}>
+        <label class="me-3">{{ stat.type.name }}</label>
+      {% endfor %}
+      <br>
+      <button class="btn btn-primary my-4 me-4" type="submit">Фильтр</button>
+      <!-- <button class="btn btn-primary my-4 me-4">Выгузить таблицу</button>
+      <button class="btn btn-primary my-4 me-4">Построить график</button> -->
+    </form>
+    {% for stat in stats %}
+      {% if stat.text %}
+        <p>{{ stat.created }} - заметка - <span class="fw-bold">{{ stat.text }}</span></p>
+      {% else %}
+        <p>{{ stat.created }} - {{ stat.type.name }} - <span class="fw-bold">
+          {% if stat.type.data_type == 'float' %}
+            {{ stat.data|floatformat }}
+          {% elif stat.type.data_type == 'int' %}
+            {{ stat.data|floatformat:"0" }}
+          {% else %}
+            {{ stat.data }}
+          {% endif %}
+        </span></p>
+      {% endif %}
+    {% endfor %}
+  </div>
 {% endif %}
 {% endblock %}
