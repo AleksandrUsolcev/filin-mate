@@ -5,14 +5,40 @@
 {% block content %}
 <h4>telegram id: {{ patient.telegram }}</h4>
 <p>Зарегистрирован {{ patient.created }}</p>
-{% if patient.age %}
-  <p>Возраст {{ patient.age }}</p>
+{% if patient.date_of_birth %}
+  <p>Возраст: {{ patient.age }} - Дата рождения {{ patient.date_of_birth }}</p>
+{% endif %}
+{% if importants %}
+  <p>
+  {% for stat in importants %}
+      {{ stat.type.name }}
+      <span class="fw-bold pe-3">
+      {% if stat.type.data_type == 'float' %}
+        {{ stat.data|floatformat }}
+      {% elif stat.type.data_type == 'int' %}
+        {{ stat.data|floatformat:"0" }}
+      {% else %}
+        {{ stat.data }}
+      {% endif %}
+      </span>
+  {% endfor %}
+  </p>
 {% endif %}
 {% if stats %}
   {% for stat in stats %}
-    <p>
-      {{ stat.created }} - {{ stat.type.name }} - <span class="fw-bold">{{ stat.data }}</span>
-    </p>
+    {% if stat.text %}
+      <p>{{ stat.created }} - заметка - <span class="fw-bold">{{ stat.text }}</span></p>
+    {% else %}
+      <p>{{ stat.created }} - {{ stat.type.name }} - <span class="fw-bold">
+        {% if stat.type.data_type == 'float' %}
+          {{ stat.data|floatformat }}
+        {% elif stat.type.data_type == 'int' %}
+          {{ stat.data|floatformat:"0" }}
+        {% else %}
+          {{ stat.data }}
+        {% endif %}
+      </span></p>
+    {% endif %}
   {% endfor %}
 {% endif %}
 {% endblock %}

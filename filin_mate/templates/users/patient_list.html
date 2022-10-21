@@ -4,6 +4,6 @@
 {% endblock %}
 {% block content %}
 {% for patient in patients  %}
-  {{ patient.telegram }}
+  <a href="{% url 'web:patient_detail' patient.id %}">{{ patient.id }} - {{ patient.created }} - {{ patient.telegram }}</a>
 {% endfor %}
 {% endblock %}

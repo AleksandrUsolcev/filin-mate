@@ -1,7 +1,9 @@
+from itertools import chain
+
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView
+from stats.models import Note, Stat
 from users.models import Patient
-from stats.models import Stat
 
 
 class PatientListView(ListView):
@@ -16,8 +18,17 @@ class PatientDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        patient = get_object_or_404(Patient, id=self.kwargs['pk'])
-        stats = Stat.objects.select_related('type').filter(patient=patient)
-        extra_context = {'stats': stats}
+        patient_id = self.kwargs['pk']
+        stats = Stat.objects.select_related(
+            'type').filter(patient_id=patient_id)
+        importants = stats.filter(type__important=True).distinct('type')
+        notes = Note.objects.filter(patient_id=patient_id)
+        stats = sorted(
+            chain(stats, notes),
+            key=lambda data: data.created, reverse=True)
+        extra_context = {
+            'importants': importants,
+            'stats': stats
+        }
         context.update(extra_context)
         return context

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
@@ -113,7 +115,7 @@ class Patient(models.Model):
         null=True,
         blank=True,
     )
-    age = models.DateField(
+    date_of_birth = models.DateField(
         verbose_name='Дата рождения',
         blank=True,
         null=True
@@ -129,6 +131,9 @@ class Patient(models.Model):
 
     def __str__(self):
         return str(f'Patient id {self.pk}')
+
+    def age(self):
+        return datetime.now().year - self.date_of_birth.year
 
 
 class Doctor(models.Model):
