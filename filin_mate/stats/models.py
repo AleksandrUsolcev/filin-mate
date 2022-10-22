@@ -1,4 +1,3 @@
-from email.policy import default
 from api import exceptions as exc
 from core.models import StatsBaseModel
 from django.db import models

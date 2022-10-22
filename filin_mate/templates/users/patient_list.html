@@ -15,7 +15,7 @@
       </thead>
       {% for patient in patients %}
           <tr>
-            <td style=white-space:nowrap">{{ patient.created }}</td>
+            <td class="text-nowrap">{{ patient.created }}</td>
             <td><a href="{% url 'web:patient_detail' patient.id %}">{{ patient.id }}</a></td>
             <td>{{ patient.stats.count }}</td>
           </tr>
