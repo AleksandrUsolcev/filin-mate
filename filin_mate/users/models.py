@@ -102,7 +102,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Patient(models.Model):
     """Пациент"""
 
-    telegram = models.PositiveIntegerField(
+    telegram = models.BigIntegerField(
         verbose_name='telegram id',
         unique=True,
         blank=True,
