@@ -1,4 +1,4 @@
-name: deploy filin
+name: filin_mate workflow
 
 on: [push]
 
