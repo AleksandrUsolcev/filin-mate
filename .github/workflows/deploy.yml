@@ -46,6 +46,8 @@ jobs:
           script: |
             sudo docker-compose stop
             sudo docker-compose rm web
+            sudo docker-compose rm bot
+            cd ${{ secrets.PROJECT_DIR }}
             rm .env
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
