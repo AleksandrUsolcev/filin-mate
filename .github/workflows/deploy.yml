@@ -48,6 +48,9 @@ jobs:
             rm .env
             touch .env
             echo DB_PORT=${{ secrets.DJANGO_SECRET_KEY }} >> .env
+            echo DB_PORT=${{ secrets.DOCKER_USERNAME }} >> .env
+            echo DB_PORT=${{ secrets.DOCKER_PROJECT }} >> .env
+            echo DB_PORT=${{ secrets.DOCKER_BOT }} >> .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
