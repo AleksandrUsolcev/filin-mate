@@ -48,6 +48,8 @@ jobs:
             rm .env
             touch .env
             echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
+            echo DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
+            echo DJANGO_TRUSTED_ORIGINS=${{ secrets.DJANGO_TRUSTED_ORIGINS }} >> .env
             echo FILIN_TOKEN=${{ secrets.FILIN_TOKEN }} >> .env
             echo TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
             echo WEATHER_TOKEN=${{ secrets.WEATHER_TOKEN }} >> .env
@@ -71,5 +73,5 @@ jobs:
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
+        token: ${{ secrets.TELEGRAM_TOKEN_SERVICE }}
         message: ${{ github.workflow }} успешно выполнен! 

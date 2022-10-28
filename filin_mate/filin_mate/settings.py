@@ -13,7 +13,7 @@ SECRET_KEY = os.getenv(
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [os.getenv('DJANGO_ALLOWED_HOSTS', default='*')]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -48,7 +48,9 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost']
+CSRF_TRUSTED_ORIGINS = [os.getenv(
+    'DJANGO_TRUSTED_ORIGINS',
+    default='http://localhost')]
 
 ROOT_URLCONF = "filin_mate.urls"
 
