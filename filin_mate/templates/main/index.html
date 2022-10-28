@@ -1,18 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Вход на сайт{% endblock %}
+{% block title %}Filin Mate{% endblock %}
 {% block content %}
 {% load user_filters %}
-<div class="col-lg-4 col-md-6 col-12 pt-3">
-  <form method="post">
-    {% csrf_token %}
-    {% for field in form %}
-      <p class="mt-2 mb-2 fw-bold">{{ field.label}}</p>
-      <p>{{ field|addclass:'form-control' }}</p>
-      <p class="fw-light">{{ field.help_text }}</p>
-    {% endfor %}
-    <button class="btn btn-primary mb-5 mt-2" type="submit">
-      Вход
-    </button>
-  </form>
-</div>
+<h1>Main page soon</h1>
 {% endblock %}

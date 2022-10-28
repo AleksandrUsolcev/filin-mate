@@ -1,19 +1,24 @@
 import csv
 from itertools import chain
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from stats.models import Note, Stat
 from users.models import Patient
 
 
-class PatientListView(ListView):
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'main/index.html'
+
+
+class PatientListView(LoginRequiredMixin, ListView):
     model = Patient
     template_name = 'users/patient_list.html'
     context_object_name = 'patients'
 
 
-class PatientDetailView(DetailView):
+class PatientDetailView(LoginRequiredMixin, DetailView):
     model = Patient
     template_name = 'users/patient_detail.html'
 

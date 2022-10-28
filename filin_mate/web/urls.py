@@ -8,8 +8,13 @@ app_name = 'web'
 urlpatterns = [
     path(
         '',
-        LoginView.as_view(template_name='main/index.html'),
+        views.IndexView.as_view(),
         name='index'
+    ),
+    path(
+        'login/',
+        LoginView.as_view(template_name='users/login.html'),
+        name='login'
     ),
     path(
         'patients/',
