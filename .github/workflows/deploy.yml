@@ -44,10 +44,14 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             sudo docker compose stop
-            sudo docker compose rm web
+            sudo docker compose rm web bot
             rm .env
             touch .env
             echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
+            echo FILIN_TOKEN=${{ secrets.FILIN_TOKEN }} >> .env
+            echo TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
+            echo WEATHER_TOKEN=${{ secrets.WEATHER_TOKEN }} >> .env
+            echo WEATHER_PARSE=${{ secrets.WEATHER_PARSE }} >> .env
             echo DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} >> .env
             echo DOCKER_PROJECT=${{ secrets.DOCKER_PROJECT }} >> .env
             echo DOCKER_BOT=${{ secrets.DOCKER_BOT }} >> .env
