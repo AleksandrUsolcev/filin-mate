@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}
+  Список пациентов
+{% endblock %}
+{% block content %}
+{% if patients %}
+  <table class="table">
+    <tbody>
+      <thead>
+        <tr>
+          <th scope="col">Дата регистрации</th>
+          <th scope="col">id</th>
+          <th scope="col">Кол-во данных</th>
+        </tr>
+      </thead>
+      {% for patient in patients %}
+          <tr>
+            <td class="text-nowrap">{{ patient.created }}</td>
+            <td><a href="{% url 'web:patient_detail' patient.id %}">{{ patient.id }}</a></td>
+            <td>{{ patient.stats.count }}</td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,81 @@
+name: filin_mate workflow
+
+on: [push]
+
+jobs:
+  build_and_push_to_docker_hub:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1 
+      - name: Login to Docker 
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push Web to Docker Hub
+        uses: docker/build-push-action@v2 
+        with:
+          file: filin_mate/Dockerfile
+          context: filin_mate/
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROJECT }}
+      - name: Push Bot to Docker Hub
+        uses: docker/build-push-action@v2 
+        with:
+          file: telegram_bot/Dockerfile
+          context: telegram_bot/
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_BOT }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_push_to_docker_hub
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - name: executing remote ssh commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            sudo docker compose stop
+            sudo docker compose rm web bot
+            sudo docker image rm ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROJECT }}
+            sudo docker image rm ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_BOT }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROJECT }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_BOT }}
+            rm .env
+            touch .env
+            echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
+            echo DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
+            echo DJANGO_TRUSTED_ORIGINS=${{ secrets.DJANGO_TRUSTED_ORIGINS }} >> .env
+            echo FILIN_TOKEN=${{ secrets.FILIN_TOKEN }} >> .env
+            echo TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
+            echo WEATHER_TOKEN=${{ secrets.WEATHER_TOKEN }} >> .env
+            echo WEATHER_PARSE=${{ secrets.WEATHER_PARSE }} >> .env
+            echo DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} >> .env
+            echo DOCKER_PROJECT=${{ secrets.DOCKER_PROJECT }} >> .env
+            echo DOCKER_BOT=${{ secrets.DOCKER_BOT }} >> .env
+            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+            echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+            sudo docker compose up -d 
+
+  send_message:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+    - name: send message
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN_SERVICE }}
+        message: ${{ github.workflow }} успешно выполнен! 

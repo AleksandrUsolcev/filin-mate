@@ -42,6 +42,11 @@ class StatType(StatsBaseModel):
     max_value = models.FloatField(
         verbose_name='Максимальное значение'
     )
+    important = models.BooleanField(
+        verbose_name='Важное значение',
+        default=False,
+        blank=True
+    )
 
     class Meta:
         verbose_name = 'Тип данных'

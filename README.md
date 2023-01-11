@@ -25,12 +25,13 @@ Web:
 
 ## Технологии
 
-- Python 3.9+
+- [Python](https://www.python.org/) 3.9+
 - [django](https://github.com/django/django) 4.1
+- [AIOGram](https://github.com/aiogram/aiogram) 2.22
 - [django-rest-framework](https://github.com/encode/django-rest-framework)
   3.13
+- [Requests](https://github.com/psf/requests) 2.28
 - [Simple JWT](https://github.com/jazzband/djangorestframework-simplejwt) 5.2.0
-- [AIOGram](https://github.com/aiogram/aiogram) 2.22
 - [Dateutil](https://github.com/dateutil/dateutil) 2.8
 
 ## Запуск проекта
@@ -73,7 +74,7 @@ docker-compose exec web python manage.py createsuperuser
 docker-compose exec web python manage.py token <email> <password>
 ``` 
 
-**Данная команда так же обновляет уже созданный токен. Посмотреть актуальный токен можно перейдя в админке на УЗ суперпользователя .../project-admin/users/user/*
+**Данная команда так же обновляет уже созданный токен. Посмотреть актуальный токен можно перейдя в админке на УЗ суперпользователя `http://localhost/project-admin/users/user/`*
 
 В созданном ранее .env файле копируем в значение **FILIN_TOKEN** полученный токен суперпользователя
 
@@ -104,3 +105,4 @@ docker-compose up -d --build
 ## Автор
 
 [Александр Усольцев](https://github.com/AleksandrUsolcev)
+

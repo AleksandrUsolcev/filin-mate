@@ -27,7 +27,7 @@ class PatientAdmin(admin.ModelAdmin):
         'created',
         'user',
         'telegram',
-        'age',
+        'date_of_birth',
     )
 
 

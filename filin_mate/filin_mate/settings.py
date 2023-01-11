@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,9 +12,9 @@ SECRET_KEY = os.getenv(
     'DJANGO_SECRET_KEY',
     default="django-insecure-dtiqu%b5phf$qg$+o)pb_sk0ixgyth3t&g$x-ix&)#^a%#u2j)")
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [os.getenv('DJANGO_ALLOWED_HOSTS', default='*')]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -26,10 +27,12 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "rest_framework_simplejwt",
+    "debug_toolbar",
     "core",
     "users",
     "stats",
     "api",
+    "web",
 ]
 
 MIDDLEWARE = [
@@ -41,11 +44,14 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost']
+CSRF_TRUSTED_ORIGINS = [os.getenv(
+    'DJANGO_TRUSTED_ORIGINS',
+    default='http://localhost')]
 
 ROOT_URLCONF = "filin_mate.urls"
 
@@ -65,6 +71,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
 ]
 
 WSGI_APPLICATION = "filin_mate.wsgi.application"
@@ -129,3 +139,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_URL = 'web:login'

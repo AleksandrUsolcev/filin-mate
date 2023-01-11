@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicons/16x16.png' %}">
+    <script src="{% static 'js/bootstrap/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap.min.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+
+<div class="container-fluid row">
+  <div class="col-6">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+</body>
+</html>
