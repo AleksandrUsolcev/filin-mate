@@ -22,14 +22,14 @@ jobs:
           file: filin_mate/Dockerfile
           context: filin_mate/
           push: true
-          tags: usolev/filin_mate
+          tags: usolev/filin_mate:latest
       - name: Push Bot to Docker Hub
         uses: docker/build-push-action@v2 
         with:
           file: telegram_bot/Dockerfile
           context: telegram_bot/
           push: true
-          tags: usolev/filin_mate_bot
+          tags: usolev/filin_mate_bot:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -45,10 +45,10 @@ jobs:
           script: |
             sudo docker compose stop
             sudo docker compose rm web bot
-            sudo docker image rm usolev/filin_mate
-            sudo docker image rm usolev/filin_mate_bot
-            sudo docker pull usolev/filin_mate
-            sudo docker pull usolev/filin_mate_bot
+            sudo docker image rm usolev/filin_mate:latest
+            sudo docker image rm usolev/filin_mate_bot:latest
+            sudo docker pull usolev/filin_mate:latest
+            sudo docker pull usolev/filin_mate_bot:latest
             rm .env
             touch .env
             echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
@@ -59,8 +59,8 @@ jobs:
             echo WEATHER_TOKEN=${{ secrets.WEATHER_TOKEN }} >> .env
             echo WEATHER_PARSE=${{ secrets.WEATHER_PARSE }} >> .env
             echo DOCKER_USERNAME=usolev >> .env
-            echo DOCKER_PROJECT=filin_mate >> .env
-            echo DOCKER_BOT=filin_mate_bot >> .env
+            echo DOCKER_PROJECT=filin_mate:latest >> .env
+            echo DOCKER_BOT=filin_mate_bot:latest >> .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env

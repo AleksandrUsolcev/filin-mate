@@ -15,7 +15,7 @@ services:
 
   web:
     container_name: filin-web
-    image: usolev/filin_mate
+    image: usolev/filin_mate:latest
     restart: always
     volumes:
       - static:/app/static/
@@ -27,7 +27,7 @@ services:
 
   bot:
     container_name: filin-bot
-    image: usolev/filin_mate_bot
+    image: usolev/filin_mate_bot:latest
     restart: always
     env_file:
       - ./.env
