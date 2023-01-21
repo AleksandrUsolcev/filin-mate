@@ -15,7 +15,7 @@ services:
 
   web:
     container_name: filin-web
-    image: ${DOCKER_USERNAME}/${DOCKER_PROJECT}
+    image: usolev/filin_mate
     restart: always
     volumes:
       - static:/app/static/
@@ -27,7 +27,7 @@ services:
 
   bot:
     container_name: filin-bot
-    image: ${DOCKER_USERNAME}/${DOCKER_BOT}
+    image: usolev/filin_mate_bot
     restart: always
     env_file:
       - ./.env
